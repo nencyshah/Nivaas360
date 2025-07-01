@@ -17,4 +17,4 @@ app.listen(3000, () => {
 
 api.get('/test', (req, res) => {//request is the data that we get from client side and response is the data that we send to client side
  res.send('Hello World!'); //send is used to send the data to client side
-});
+}); 
