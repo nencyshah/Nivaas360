@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import Userrouter from './routes/user.route.js'; // Importing user routes
 dotenv.config();
 mongoose.connect(process.env.MONGO).then(() => {
   console.log('Connected to MongoDB');
@@ -15,6 +16,10 @@ app.listen(3000, () => {
 
 //creating api routes
 
-api.get('/test', (req, res) => {//request is the data that we get from client side and response is the data that we send to client side
- res.send('Hello World!'); //send is used to send the data to client side
-}); 
+//app.get('/test', (req, res) => {//request is the data that we get from client side and response is the data that we send to client side
+ //res.json({
+  //message: 'Hello World!' //json is used to send the data in json format
+// }) send is used to send the data to client side
+//}); app.get for defining routes.
+
+app.use('/api/user',Userrouter); //middleware to parse JSON data
