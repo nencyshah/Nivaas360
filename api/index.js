@@ -28,3 +28,18 @@ app.use(express.json()); // Middleware to parse URL-encoded data
  //middleware to parse JSON data
 app.use('/api/user',Userrouter); //middleware to parse JSON data
 app.use('/api/auth', authRouter); //middleware to parse JSON data
+
+app.use((err, req, res, next) => {
+  //err is error comming from the server,
+  // req is the request from the client side,
+  //  res is the response from the server side,
+  //  next is used to call the next middleware
+  const statuscode= err.statuscode || 500;// Log the error stack trace
+  const message = err.message || 'Something went wrong';
+  console.error(err.stack);
+  return res.status(statuscode).json({
+    success: false,
+    status: statuscode,
+    message: message
+  });    
+});
