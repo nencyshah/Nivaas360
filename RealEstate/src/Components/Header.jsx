@@ -18,7 +18,7 @@ export default function Header() {
         <ul className="gap-4 flex items-center text-gray-700 font-semibold text-xs sm:text-sm">
           <Link to = "/"> <li className="hidden sm:inline hover:text-gray-900">Home</li>  </Link>
           <Link to = "/About"><li className="hidden sm:inline hover:text-gray-900">About</li> </Link>
-          <Link to = "/Signup"> <li className="hover:text-gray-900">Signin</li></Link>
+          <Link to = "/Signup"> <li className="hover:text-gray-900">Signup</li></Link>
          
         </ul>
       </div>

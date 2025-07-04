@@ -5,7 +5,7 @@ import Signup from './Signup'
 
 import About from './About'
 import Profile from './Profile'
-import Header from './Components/Header'
+import Header from '../Components/Header'
 
 
 export default function App() {
