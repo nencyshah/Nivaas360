@@ -6,7 +6,7 @@ import Signup from './Signup'
 import About from './About'
 import Profile from './Profile'
 import Header from '../Components/Header'
-
+import PrivateRoute from '../Components/PrivateRoute'
 
 export default function App() {
   return <BrowserRouter>
@@ -17,7 +17,7 @@ export default function App() {
    <Route path='/Signup' element={<Signup/>}/>
    <Route path='/About' element={<About/>}/>
    <Route path='/profile' element={<Profile/>}/>
-  </Routes>
+  </Routes> {/*i have to fix this */}
   </BrowserRouter>
   
 }
