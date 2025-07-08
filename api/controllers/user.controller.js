@@ -3,3 +3,4 @@ export const test = (req, res) => {
     message: 'API is working!'
   });
 }
+export const UpdateUserInfo = (req, res) => {}

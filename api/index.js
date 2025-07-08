@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Userrouter from './routes/user.route.js'; // Importing user routes
 import authRouter from './routes/auth.routes.js'; // Importing auth routes // Importing auth routes
-
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 mongoose.connect(process.env.MONGO).then(() => {
@@ -16,6 +16,7 @@ app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
 app.use(express.json()); // Middleware to parse URL-encoded data
+app.use(cookieParser()); // Middleware to parse cookies
 
 //creating api routes
 

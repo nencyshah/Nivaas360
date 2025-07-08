@@ -2,7 +2,7 @@ import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom"; // Correct import
 import { useSelector } from "react-redux";
 export default function Header() {
-  const {currentUser} = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   return (
     <header className="bg-gray-100 shadow-md ">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-4">
@@ -24,34 +24,25 @@ export default function Header() {
           <Link to="/About">
             <li className="hidden sm:inline hover:text-gray-900">About</li>{" "}
           </Link>
-          <Link to="/Signup">
-            <li className="hidden sm:inline hover:text-gray-900">Signup</li>{" "}
-          </Link>
-          <Link to="/profile">
-            <li className="hidden sm:inline hover:text-gray-900">profile</li>{" "}
-          </Link>
 
-           <Link to='/Profile'>
-            {currentUser ? (
+          <Link to="/profile">
+            {user ? (
               <img
-                className='rounded-full h-7 w-7 object-cover'
-                src={currentUser.avatar}
-                alt='Profile'/>
-            ) : currentUser === null ? (
-              <img
-                className='rounded-full h-7 w-7 object-cover'
-                src='https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740'
-                alt='Profile'
+                className="rounded-full h-7 w-7 object-cover"
+                src={user .avatar ? user.avatar : "/src/assets/profile.png"}
+                alt="Profile"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/src/assets/profile.png";
+                }}
               />
             ) : (
-              <li className=' text-slate-700 hover:underline'> Sign in</li>
+              <li className=" text-slate-700 hover:underline"> Sign in</li>
             )}
           </Link>
         </ul>
       </div>
       
     </header>
-    
   );
 }
-
