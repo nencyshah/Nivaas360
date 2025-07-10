@@ -24,7 +24,7 @@ export default function Header() {
           <Link to="/About">
             <li className="hidden sm:inline hover:text-gray-900">About</li>{" "}
           </Link>
-
+         
           <Link to="/profile">
             {user ? (
               <img

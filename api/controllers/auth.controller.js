@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs"; // Importing bcrypt for password hashing
 import{ errorHandler } from "../utils/error.js"; // Importing error handler utility
 import jwt from "jsonwebtoken"; // Importing JWT for token generation
 export const signup = async (req, res, next) => {
-  const { Username, email, password } = req.body;
+  const { username, email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10); // Hashing the password
-  const newuser = new User({ Username, email, password: hashedPassword });
+  const newuser = new User({ username, email, password: hashedPassword, avatar: photo });
   try {
     await newuser.save();
     res.status(201).json("User created successfully");
@@ -31,7 +31,7 @@ export const signin = async (req, res, next) => {
   }
 };
 export const google = async (req, res, next) => {
-  const { Username, email, photo } = req.body;
+  const { username, email, photo } = req.body;
   try {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
@@ -45,14 +45,14 @@ export const google = async (req, res, next) => {
     else {
       const generatedPassword = Math.random().toString(36).slice(-8)+ Math.random().toString(36).slice(-8); // Generate a random password;
       const hashedPassword = bcrypt.hashSync(generatedPassword, 10); // Hash the generated password
-     const rawUsername = req.body.Username;
+     const rawUsername = req.body.username;
 const processedUsername =
   rawUsername && typeof rawUsername === "string" && rawUsername.trim().length > 0
     ? rawUsername.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4)
     : "user" + Math.random().toString(36).slice(-4);
 
 const newUser = new User({
-  Username: processedUsername,
+  username: processedUsername,
   email: req.body.email,
   password: hashedPassword,
   avatar: req.body.photo

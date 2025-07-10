@@ -3,7 +3,9 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Userrouter from './routes/user.route.js'; // Importing user routes
 import authRouter from './routes/auth.routes.js'; // Importing auth routes // Importing auth routes
+import { listingRouter } from './routes/listing.route.js'; // Importing listing routes
 import cookieParser from "cookie-parser";
+
 
 dotenv.config();
 mongoose.connect(process.env.MONGO).then(() => {
@@ -15,7 +17,7 @@ const app = express();
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
-app.use(express.json()); // Middleware to parse URL-encoded data
+app.use(express.json({ limit: '10mb' })); // Middleware to parse JSON data with increased limit for images
 app.use(cookieParser()); // Middleware to parse cookies
 
 //creating api routes
@@ -29,6 +31,8 @@ app.use(cookieParser()); // Middleware to parse cookies
  //middleware to parse JSON data
 app.use('/api/user',Userrouter); //middleware to parse JSON data
 app.use('/api/auth', authRouter); //middleware to parse JSON data
+app.use('/api/listing', listingRouter); //middleware to parse JSON data
+
 
 app.use((err, req, res, next) => {
   //err is error comming from the server,

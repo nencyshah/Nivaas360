@@ -57,9 +57,9 @@ export default function Signup() {
       >
         <input
           type="text"
-          placeholder="Username"
+          placeholder="username"
           className="border p-3 rounded-lg"
-          id="Username"
+          id="username"
           onChange={handleChange}
           required // Ensures the field is filled
         />

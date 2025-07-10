@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  Username: {
+  username: {
       type: String,
       required: true,
       unique: true
@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
       type: String,
-      default: ''
+      default: '/src/access_tokens/profile.png' // Default avatar path
   },
 },{timestamps: true});    
 
