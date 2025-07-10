@@ -71,4 +71,56 @@ const newUser = new User({
     next(error);
   }
 }
+// Upload profile image
+export const uploadProfileImage = async (req, res, next) => {
+  try {
+    const { avatar } = req.body;
+    const userId = req.params.id;
+
+    if (!avatar) {
+      return next(errorHandler(400, "No image provided"));
+    }
+
+    // Find and update user
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { avatar: avatar },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return next(errorHandler(404, "User not found"));
+    }
+
+    // Return user without password
+    const { password, ...userWithoutPassword } = updatedUser._doc;
+    res.status(200).json(userWithoutPassword);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update user profile
+export const updateUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const { username, email, phone } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { username, email, phone },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return next(errorHandler(404, "User not found"));
+    }
+
+    const { password, ...userWithoutPassword } = updatedUser._doc;
+    res.status(200).json(userWithoutPassword);
+  } catch (error) {
+    next(error);
+  }
+};
+
   

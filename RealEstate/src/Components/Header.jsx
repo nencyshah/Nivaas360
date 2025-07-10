@@ -29,7 +29,7 @@ export default function Header() {
             {user ? (
               <img
                 className="rounded-full h-7 w-7 object-cover"
-                src={user .avatar ? user.avatar : "/src/assets/profile.png"}
+                src={user.avatar}
                 alt="Profile"
                 onError={(e) => {
                   e.target.onerror = null;

@@ -17,8 +17,11 @@ const app = express();
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
-app.use(express.json({ limit: '10mb' })); // Middleware to parse JSON data with increased limit for images
-app.use(cookieParser()); // Middleware to parse cookies
+
+// Increase JSON payload limit for base64 images
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+app.use(cookieParser());
 
 //creating api routes
 
