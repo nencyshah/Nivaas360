@@ -5,13 +5,13 @@ import jwt from "jsonwebtoken"; // Importing JWT for token generation
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10); // Hashing the password
-  const newuser = new User({ username, email, password: hashedPassword, avatar: photo });
+  const newuser = new User({ username, email, password: hashedPassword });
   try {
     await newuser.save();
     res.status(201).json("User created successfully");
   } catch (error) {
     next(error); // Pass the error to the error handling middleware
-  } 
+  }
 };
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
@@ -33,7 +33,7 @@ export const signin = async (req, res, next) => {
 export const google = async (req, res, next) => {
   const { username, email, photo } = req.body;
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email });
     if (user) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password, ...rest } = user._doc;
@@ -55,7 +55,9 @@ const newUser = new User({
   username: processedUsername,
   email: req.body.email,
   password: hashedPassword,
-  avatar: req.body.photo
+  avatar:
+          photo ||
+          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
 });
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
@@ -118,6 +120,36 @@ export const updateUser = async (req, res, next) => {
 
     const { password, ...userWithoutPassword } = updatedUser._doc;
     res.status(200).json(userWithoutPassword);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signOut = async (req, res, next) => {
+  try {
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Add this for production
+      sameSite: "strict", // Add this for security
+    });
+    res.status(200).json("User has been logged out!");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, "You can only delete your own account!"));
+  }
+
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.clearCookie("access_token");
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully!",
+    });
   } catch (error) {
     next(error);
   }

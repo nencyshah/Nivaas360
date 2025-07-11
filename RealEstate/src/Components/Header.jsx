@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <header className="bg-gray-100 shadow-md ">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-4">
-        <Link to="/">
+        <Link to="/"> 
           <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
             <span className="text-gray-700">Nivaas</span>
             <span className="text-gray-500">360</span>
@@ -24,8 +24,11 @@ export default function Header() {
           <Link to="/About">
             <li className="hidden sm:inline hover:text-gray-900">About</li>{" "}
           </Link>
+          <Link to="/Signup">
+            <li className="hidden sm:inline hover:text-gray-900">Signup</li>{" "}
+          </Link>
          
-          <Link to="/profile">
+          <Link to="/Profile">
             {user ? (
               <img
                 className="rounded-full h-7 w-7 object-cover"
@@ -37,7 +40,9 @@ export default function Header() {
                 }}
               />
             ) : (
-              <li className=" text-slate-700 hover:underline"> Sign in</li>
+              <Link to="/signin" className="text-slate-700 hover:underline">
+    Sign in
+  </Link>
             )}
           </Link>
         </ul>

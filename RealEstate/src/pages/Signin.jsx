@@ -36,7 +36,7 @@ export default function Signin() {
         dispatch(signInFailure(data.message));
         return;
       }
-      dispatch(signInSuccess(data.user));
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
       dispatch(signInFailure(error.message));
@@ -49,23 +49,23 @@ export default function Signin() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white text-center mb-6 sm:mb-8">Sign In</h1>
 
         <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
-        <input
-  type="email"
-  placeholder="Email"
-  className="w-full p-3 rounded-xl border border-gray-600 bg-gray-200 text-gray-900 placeholder-gray-500 focus:border-indigo-500 text-sm sm:text-base"
-  id="email"
-  onChange={handleChange}
-  required
-/>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 rounded-xl border border-gray-600 bg-gray-200 text-gray-900 placeholder-gray-500 focus:border-indigo-500 text-sm sm:text-base"
+            id="email"
+            onChange={handleChange}
+            required
+          />
 
-<input
-  type="password"
-  placeholder="Password"
-  className="w-full p-3 rounded-xl border border-gray-600 bg-gray-200 text-gray-900 placeholder-gray-500 focus:border-indigo-500 text-sm sm:text-base"
-  id="password"
-  onChange={handleChange}
-  required
-/>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 rounded-xl border border-gray-600 bg-gray-200 text-gray-900 placeholder-gray-500 focus:border-indigo-500 text-sm sm:text-base"
+            id="password"
+            onChange={handleChange}
+            required
+          />
 
 
           <button
