@@ -4,6 +4,12 @@ import{ errorHandler } from "../utils/error.js"; // Importing error handler util
 import jwt from "jsonwebtoken"; // Importing JWT for token generation
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
+
+  // Validation: username must be present
+  if (!username) {
+    return res.status(400).json({ success: false, message: "Username is required" });
+  }
+
   const hashedPassword = bcrypt.hashSync(password, 10); // Hashing the password
   const newuser = new User({ username, email, password: hashedPassword });
   try {

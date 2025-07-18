@@ -21,3 +21,11 @@ export const createListing = async (req, res, next) => {
     next(error);
   }
 };
+export const getAllListings = async (req, res, next) => {
+  try {
+    const listings = await Listing.find();
+    res.status(200).json(listings);
+  } catch (error) {
+    next(error);
+  }
+};
