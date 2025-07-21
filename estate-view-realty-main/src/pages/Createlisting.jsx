@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-
 export default function CreateListing() {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -19,6 +18,7 @@ export default function CreateListing() {
     description: "",
     address: "",
     type: "rent",
+    status: "rent",
     sell: false,
     rent: true,
     parking: false,
@@ -92,19 +92,19 @@ export default function CreateListing() {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // Handle sell/rent mutual exclusivity and set type field
     if (name === "sell" || name === "rent") {
-      setFormData({
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         sell: name === "sell" ? checked : false,
         rent: name === "rent" ? checked : false,
-        type: name === "sell" && checked ? "sale" : "rent",
-      });
+        type: checked ? (name === "sell" ? "sale" : "rent") : "",
+        status: checked ? (name === "sell" ? "sell" : "rent") : "",
+      }));
     } else {
-      setFormData({
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         [name]: type === "checkbox" ? checked : value,
-      });
+      }));
     }
   };
 
@@ -134,6 +134,7 @@ export default function CreateListing() {
         description: formData.description,
         address: formData.address,
         type: formData.type,
+        status: formData.status,
         parking: formData.parking,
         furnished: formData.furnished,
         offer: formData.offer,
@@ -408,5 +409,3 @@ export default function CreateListing() {
     </div>
   );
 }
-
- 

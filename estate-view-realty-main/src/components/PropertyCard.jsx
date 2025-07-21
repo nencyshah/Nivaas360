@@ -7,8 +7,13 @@ const PropertyCard = ({ property }) => {
 
   // Helper to get the correct image src
   const getImageSrc = () => {
-    if (property.imageUrls && property.imageUrls.length > 0) {
+    if (
+      property &&
+      Array.isArray(property.imageUrls) &&
+      property.imageUrls.length > 0
+    ) {
       const img = property.imageUrls[0];
+      if (!img) return "/placeholder.jpg";
       return img.startsWith("data:") ? img : `data:image/jpeg;base64,${img}`;
     }
     return "/placeholder.jpg";
@@ -20,7 +25,7 @@ const PropertyCard = ({ property }) => {
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={getImageSrc()}
-          alt={property.name}
+          alt={property.name || "Property"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {/* Example: Verified badge */}

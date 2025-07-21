@@ -2,23 +2,45 @@ import User from "../models/user.model.js"; // Importing User model
 import bcrypt from "bcryptjs"; // Importing bcrypt for password hashing
 import{ errorHandler } from "../utils/error.js"; // Importing error handler utility
 import jwt from "jsonwebtoken"; // Importing JWT for token generation
-export const signup = async (req, res, next) => {
+export const signup = async (req, res, next, role) => {
   const { username, email, password } = req.body;
 
   // Validation: username must be present
   if (!username) {
-    return res.status(400).json({ success: false, message: "Username is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Username is required" });
   }
 
   const hashedPassword = bcrypt.hashSync(password, 10); // Hashing the password
-  const newuser = new User({ username, email, password: hashedPassword });
+  const newuser = new User({ username, email, password: hashedPassword, role });
   try {
     await newuser.save();
-    res.status(201).json("User created successfully");
+    res
+      .status(201)
+      .json(
+        `${role.charAt(0).toUpperCase() + role.slice(1)} created successfully`
+      );
   } catch (error) {
-    next(error); // Pass the error to the error handling middleware
+    // Handle duplicate email error
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists with this email!",
+      });
+    }
+    // For all other errors, send a generic message
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
   }
 };
+// Buyer signup
+export const signupBuyer = (req, res, next) => signup(req, res, next, "buyer");
+// Seller signup
+export const signupSeller = (req, res, next) =>
+  signup(req, res, next, "seller");
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   try {

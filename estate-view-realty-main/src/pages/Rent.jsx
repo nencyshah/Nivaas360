@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { Filter } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
-import FilterSidebar from '@/components/FilterSidebar';
-import PropertyCard from '@/components/PropertyCard';
-import TestimonialsSection from '@/components/TestimonialsSection';
-import Footer from '@/components/Footer';
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
+import HeroSection from "@/components/HeroSection";
+import FilterSidebar from "@/components/FilterSidebar";
+import PropertyCard from "@/components/PropertyCard";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import Footer from "@/components/Footer";
 
-const Rent = () => {const [isFilterOpen, setIsFilterOpen] = useState(false);
+const Rent = () => {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/listing")
+    fetch("/api/listing?type=rent")
       .then((res) => res.json())
       .then((data) => {
         setProperties(data);
@@ -26,10 +26,8 @@ const Rent = () => {const [isFilterOpen, setIsFilterOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
       <main>
         <HeroSection />
-        
         {/* Properties Section */}
         <section className="py-12">
           <div className="container mx-auto px-4">
@@ -42,7 +40,6 @@ const Rent = () => {const [isFilterOpen, setIsFilterOpen] = useState(false);
                   Discover our handpicked selection of premium properties
                 </p>
               </div>
-              
               <Button
                 variant="outline"
                 onClick={() => setIsFilterOpen(true)}
@@ -52,24 +49,18 @@ const Rent = () => {const [isFilterOpen, setIsFilterOpen] = useState(false);
                 Filters
               </Button>
             </div>
-
             <div className="flex gap-6">
               {/* Desktop Sidebar */}
               <div className="hidden lg:block">
-                <FilterSidebar 
-                  isOpen={true} 
-                  onClose={() => {}} 
+                <FilterSidebar isOpen={true} onClose={() => {}} />
+              </div>
+              {/* Mobile/Tablet Sidebar */}
+              <div className="lg:hidden">
+                <FilterSidebar
+                  isOpen={isFilterOpen}
+                  onClose={() => setIsFilterOpen(false)}
                 />
               </div>
-
-              {/* Mobile/Tablet Sidebar */}
-<div className="lg:hidden">
-  <FilterSidebar 
-    isOpen={isFilterOpen} 
-    onClose={() => setIsFilterOpen(false)} 
-  />
-</div>
-
               {/* Properties Grid */}
               <div className="flex-1">
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -87,7 +78,6 @@ const Rent = () => {const [isFilterOpen, setIsFilterOpen] = useState(false);
                     ))
                   )}
                 </div>
-
                 {/* Load More */}
                 <div className="text-center mt-12">
                   <Button variant="outline" size="lg">
@@ -98,14 +88,11 @@ const Rent = () => {const [isFilterOpen, setIsFilterOpen] = useState(false);
             </div>
           </div>
         </section>
-
         <TestimonialsSection />
       </main>
-
       <Footer />
     </div>
   );
 };
-
 
 export default Rent;

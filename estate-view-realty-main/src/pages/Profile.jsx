@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { deleteUserFailure, deleteUserStart, deleteUserSuccess, signInFailure, signInSuccess, signOutUserStart, signOutUserSuccess, signOutUserFailure } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import defaultProfileImg from "../assets/profile.png";
 // import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
@@ -90,6 +91,7 @@ export default function Profile() {
       } else {
         dispatch(signInSuccess(data));
         setUpdateSuccess(true);
+        navigate("/");
       }
     } catch (err) {
       setUpdateError("Update failed. Please try again.", err);
@@ -184,11 +186,15 @@ export default function Profile() {
         />
         <div className="relative">
           <img
-            onClick={() => fileRef.current.click()}
-            src={user?.avatar || "https://via.placeholder.com/150"}
-            className="rounded-full h-28 w-28 object-cover border-4 border-indigo-300 shadow-md hover:scale-105 transition-transform duration-300 mb-2 cursor-pointer"
-            alt="profile"
-          />
+  onClick={() => fileRef.current.click()}
+  src={user?.avatar && user.avatar !== "" ? user.avatar : profileImg}
+  className="rounded-full h-28 w-28 object-cover border-4 border-indigo-300 shadow-md hover:scale-105 transition-transform duration-300 mb-2 cursor-pointer"
+  alt="Profile"
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = defaultProfileImg; // Fallback to default image on error
+  }}
+/>
           {uploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
               <p className="text-white font-medium">Uploading...</p>

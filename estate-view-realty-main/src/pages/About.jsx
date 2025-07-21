@@ -2,8 +2,11 @@ import { Users, Award, Building, Target, Heart, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+
 
 const About = () => {
+  const navigate = useNavigate();
   const values = [
     {
       icon: Heart,
@@ -227,10 +230,13 @@ const About = () => {
               Join thousands of happy families who found their perfect property with us
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="lg">
-                Browse Properties
-              </Button>
-              <Button variant="outline" size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+             
+              <Button
+                variant="outline"
+                size="lg"
+                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                onClick={() => navigate('/contact')}
+              >
                 Contact Us
               </Button>
             </div>

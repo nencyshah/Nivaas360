@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: '/src/access_tokens/profile.png' // Default avatar path
   },
+  role: {
+      type: String,
+      enum: ["buyer", "seller"],
+      required: true,
+    },
 },{timestamps: true});    
 
 const User = mongoose.model("User", userSchema); 

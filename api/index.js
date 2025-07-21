@@ -1,53 +1,51 @@
-import express from "express";
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import express from "express"; // Import Express framework
+import mongoose from 'mongoose'; // For MongoDB connection
+import dotenv from 'dotenv'; // To load environment variables from .env file
 import Userrouter from './routes/user.route.js'; // Importing user routes
-import authRouter from './routes/auth.routes.js'; // Importing auth routes // Importing auth routes
-import { listingRouter } from './routes/listing.route.js'; // Importing listing routes
-import cookieParser from "cookie-parser";
+import authRouter from './routes/auth.routes.js'; // Importing authentication routes
+import { listingRouter } from './routes/listing.route.js'; // Importing property listing routes
+import cookieParser from "cookie-parser"; // To parse cookies from requests
+import buyingRouter from './routes/Buying.routes.js'; // Importing buying routes
 
+dotenv.config(); // Load environment variables from .env file
 
-dotenv.config();
-mongoose.connect(process.env.MONGO).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.error('Error connecting to MongoDB:', err);       
-}); 
-const app = express();
+// ✅ Connect to MongoDB
+mongoose.connect(process.env.MONGO) // process.env.MONGO contains the DB connection string from .env
+  .then(() => {
+    console.log('Connected to MongoDB'); // Log success
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err); // Log error if connection fails
+  });
+
+const app = express(); // Create an Express application instance
+
+// ✅ Start the server on port 3000
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
 
-// Increase JSON payload limit for base64 images
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
-app.use(cookieParser());
+// ✅ Middlewares
 
-//creating api routes
+// Increase JSON payload limit for base64 images (default is too small)
+app.use(express.json({ limit: "10mb" })); // Allows large JSON requests (like images)
+app.use(express.urlencoded({ limit: "10mb", extended: true })); // Handles URL-encoded form data
+app.use(cookieParser()); // Parses cookies from incoming requests
 
+// ✅ Define API routes
+app.use('/api/user', Userrouter); // User-related routes (e.g., profile, update user)
+app.use('/api/auth', authRouter); // Authentication routes (e.g., login, register)
+app.use('/api/listing', listingRouter); // Property listing routes (CRUD for properties)
+app.use("/api/buying", buyingRouter); // Routes for buying transactions
 
-//app.get('/test', (req, res) => {//request is the data that we get from client side and response is the data that we send to client side
- //res.json({
-  //message: 'Hello World!' //json is used to send the data in json format
-// }) send is used to send the data to client side
-//}); app.get for defining routes.
- //middleware to parse JSON data
-app.use('/api/user',Userrouter); //middleware to parse JSON data
-app.use('/api/auth', authRouter); //middleware to parse JSON data
-app.use('/api/listing', listingRouter); //middleware to parse JSON data
-
-
+// ✅ Global Error Handling Middleware
 app.use((err, req, res, next) => {
-  //err is error comming from the server,
-  // req is the request from the client side,
-  //  res is the response from the server side,
-  //  next is used to call the next middleware
-  const statuscode= err.statuscode || 500;// Log the error stack trace
-  const message = err.message || 'Something went wrong';
-  console.error(err.stack);
+  const statuscode = err.statuscode || 500; // Default to 500 if no custom status code
+  const message = err.message || 'Something went wrong'; // Default message
+  console.error(err.stack); // Log error stack trace for debugging
   return res.status(statuscode).json({
     success: false,
     status: statuscode,
     message: message
-  });    
+  });
 });

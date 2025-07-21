@@ -21,11 +21,15 @@ export const createListing = async (req, res, next) => {
     next(error);
   }
 };
-export const getAllListings = async (req, res, next) => {
+export const getAllListings = async (req, res) => {
   try {
-    const listings = await Listing.find();
-    res.status(200).json(listings);
+    const { status, type } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+    if (type) filter.type = type;
+    const listings = await Listing.find(filter);
+    res.json(listings);
   } catch (error) {
-    next(error);
+    res.status(500).json({ message: "Error fetching listings", error });
   }
 };

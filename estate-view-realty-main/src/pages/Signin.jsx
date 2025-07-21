@@ -1,14 +1,31 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
-import OAuth from "../Components/OAuth";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 
 export default function Signin() {
   const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector((state) => state.user);
+  const { loading } = useSelector((state) => state.user);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Show notification
+  const showNotification = (message, type) => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "" });
+    }, 3000);
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -31,23 +48,40 @@ export default function Signin() {
       });
 
       const data = await res.json();
-      console.log("Response data:", data);
       if (data.success === false) {
         dispatch(signInFailure(data.message));
+        showNotification(data.message || "Sign in failed!", "error");
         return;
       }
       dispatch(signInSuccess(data));
-      navigate("/profile");
+      showNotification("Sign in successful!", "success");
+      setTimeout(() => navigate("/"), 1500);
     } catch (error) {
       dispatch(signInFailure(error.message));
+      showNotification("An error occurred. Please try again.", "error");
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#FFFFFF] p-4">
+      {/* Notification */}
+      {notification.show && (
+        <div
+          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+            notification.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          <p>{notification.message}</p>
+        </div>
+      )}
+
       <div className="w-full max-w-sm p-6 sm:p-8 rounded-3xl shadow-2xl bg-[#FFFFFF] border border-[#E9EEF7]">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0A0E1A] text-center mb-6 sm:mb-8">Sign In</h1>
-  
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0A0E1A] text-center mb-6 sm:mb-8">
+          Sign In
+        </h1>
+
         <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
           <input
             type="email"
@@ -57,7 +91,7 @@ export default function Signin() {
             onChange={handleChange}
             required
           />
-  
+
           <input
             type="password"
             placeholder="Password"
@@ -66,7 +100,7 @@ export default function Signin() {
             onChange={handleChange}
             required
           />
-  
+
           <button
             disabled={loading}
             type="submit"
@@ -74,24 +108,20 @@ export default function Signin() {
           >
             {loading ? "Loading..." : "Sign In"}
           </button>
-  
+
           <OAuth />
         </form>
-  
+
         <div className="flex flex-col sm:flex-row gap-2 mt-4 text-sm sm:text-base justify-center items-center">
           <p className="text-[#6E7687]">Don't have an account?</p>
-          <Link to="/Signup" className="text-[#00B6FF] hover:text-[#179B4A] hover:underline">
+          <Link
+            to="/Signup"
+            className="text-[#00B6FF] hover:text-[#179B4A] hover:underline"
+          >
             <span>Sign Up</span>
           </Link>
         </div>
-  
-        {error && (
-          <div className="text-red-500 mt-4 text-center text-sm sm:text-base">
-            <p>Error: {error}</p>
-          </div>
-        )}
       </div>
     </div>
   );
-  
 }

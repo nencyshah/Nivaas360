@@ -38,6 +38,11 @@ const listingSchema = new mongoose.Schema({
         type:Boolean,
         required:true,
     },
+    status: {
+      type: String,
+      enum: ["sell", "rent"],
+      required: true,
+    },
     type:{
         type:String,
         required:true,
