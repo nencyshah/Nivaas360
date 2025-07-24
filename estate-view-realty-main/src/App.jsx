@@ -20,7 +20,6 @@ import About from "./pages/About"; // About us page
 import Contact from "./pages/Contact"; // Contact page
 import Signup from "./pages/Signup"; // User signup page
 import Signin from "./pages/Signin"; // User login page
-import RequestInfo from "./pages/RequestInfo"; // Info request form page
 import PrivacyPolicy from "./pages/PrivacyPolicy"; // Privacy policy details
 import NotFound from "./pages/NotFound"; // 404 Page Not Found
 import CreateListing from "./pages/Createlisting"; // Page for creating property listings
@@ -28,7 +27,7 @@ import Profile from "./pages/Profile"; // User profile dashboard
 import Buy from "./pages/Buy"; // Page listing properties for sale
 import Rent from "./pages/Rent"; // Page listing properties for rent
 import Purchased from "@/pages/Purchased"; // Shows purchased property details
-
+import Favorites from "@/pages/Favorites";
 // ✅ Create a QueryClient instance for React Query
 const queryClient = new QueryClient(); 
 // This is used to manage and cache all API calls globally
@@ -57,14 +56,15 @@ const App = () => (
           <Route path="/contact" element={<Contact />} /> {/* Contact page */}
           <Route path="/signup" element={<Signup />} /> {/* User registration page */}
           <Route path="/signin" element={<Signin />} /> {/* User login page */}
-          <Route path="/request-info" element={<RequestInfo />} /> {/* Request information form */}
           <Route path="/privacy" element={<PrivacyPolicy />} /> {/* Privacy policy page */}
           <Route path="/CreateListing" element={<CreateListing />} /> {/* Page for creating property listings */}
           <Route path="/profile" element={<Profile />} /> {/* User profile/dashboard */}
           <Route path="/Buy" element={<Buy />} /> {/* List of properties for sale */}
           <Route path="/Rent" element={<Rent />} /> {/* List of properties for rent */}
           <Route path="/purchased" element={<Purchased />} /> {/* Purchased properties page */}
-          
+          <Route path="/favorites" element={<Favorites />} />
+        
+
           {/* ✅ Catch-all route: if user navigates to an unknown path, show 404 Not Found page */}
           <Route path="*" element={<NotFound />} />
         </Routes>

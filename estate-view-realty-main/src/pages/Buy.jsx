@@ -43,9 +43,12 @@ const Buy = () => {
   }, [user]);
 
   // Handle Buy Request
+  // Handle Buy Request
   const handleBuy = async (listingId) => {
     const buyerId = user ? user._id : "";
     const offerPrice = 500; // TODO: Make this dynamic with input
+    const transactionType = "buy"; // Add this required field
+    const duration = null; // Add this field (not required for buy, but expected by controller)
 
     try {
       const res = await fetch("/api/buying/create", {
@@ -53,7 +56,13 @@ const Buy = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ listingId, buyerId, offerPrice }),
+        body: JSON.stringify({
+          listingId,
+          buyerId,
+          offerPrice,
+          transactionType, // Add this
+          duration, // Add this
+        }),
       });
 
       const data = await res.json();

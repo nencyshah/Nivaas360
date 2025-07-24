@@ -1,9 +1,21 @@
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { Heart, MapPin, Bed, Bath, Square, Star, Verified } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, Verified } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { addToFavorites, removeFromFavorites } from "@/redux/favorite/favoriteSlice";
 
 const PropertyCard = ({ property }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites.items);
+  const isFavorite = favorites.some((item) => item._id === property._id);
+
+  const handleFavorite = () => {
+    if (isFavorite) {
+      dispatch(removeFromFavorites(property));
+    } else {
+      dispatch(addToFavorites(property));
+    }
+  };
 
   // Helper to get the correct image src
   const getImageSrc = () => {
@@ -28,20 +40,23 @@ const PropertyCard = ({ property }) => {
           alt={property.name || "Property"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        {/* Example: Verified badge */}
+
+        {/* Verified badge */}
         {property.verified && (
           <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs flex items-center">
             <Verified className="w-4 h-4 mr-1" /> Verified
           </span>
         )}
-        {/* Example: Favorite button */}
+
+        {/* Favorite button */}
         <button
           className="absolute top-2 right-2 bg-white rounded-full p-2 shadow"
-          onClick={() => setIsFavorite((prev) => !prev)}
+          onClick={handleFavorite}
         >
           <Heart className={isFavorite ? "fill-red-500 text-red-500" : ""} />
         </button>
       </div>
+
       {/* Details */}
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
@@ -52,17 +67,19 @@ const PropertyCard = ({ property }) => {
             ₹{property.regularPrice}
             {property.type === "rent" && (
               <span className="text-xs font-normal text-muted-foreground">
-                {" "}
-                /month
+                {" "} /month
               </span>
             )}
           </span>
         </div>
+
         <div className="text-muted-foreground text-sm mb-2 flex items-center">
           <MapPin className="w-4 h-4 mr-1" />
           {property.address}
         </div>
+
         <div className="text-sm mb-2">{property.description}</div>
+
         <div className="flex items-center gap-4 text-sm mb-2">
           <span className="flex items-center">
             <Bed className="w-4 h-4 mr-1" />
@@ -77,12 +94,14 @@ const PropertyCard = ({ property }) => {
             {property.area || "N/A"}
           </span>
         </div>
+
         <div className="flex flex-wrap gap-2 mb-2">
           {property.parking && <Badge>Parking</Badge>}
           {property.furnished && <Badge>Furnished</Badge>}
           {property.offer && <Badge>Offer</Badge>}
           {property.type && <Badge>{property.type}</Badge>}
         </div>
+
         {/* Discount price */}
         {property.discountPrice > 0 && (
           <div className="text-green-600 font-semibold">

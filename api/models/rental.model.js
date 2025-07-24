@@ -1,20 +1,28 @@
 import mongoose from "mongoose";
 
-const rentingSchema = new mongoose.Schema(
+const rentalSchema = new mongoose.Schema(
   {
     listingId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Listing",
       required: true,
     },
-    buyerId: {
+    renterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    transactionType: {
+      type: String,
+      enum: ["buy", "rent"],
       required: true,
     },
     offerPrice: {
       type: Number,
       required: true,
+    },
+    duration: {
+      type: String, // Only required for rent
     },
     status: {
       type: String,
@@ -25,5 +33,5 @@ const rentingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const renting = mongoose.model("Buying", buyingSchema);
-export default Buying;
+const Rental = mongoose.model("Rental", rentalSchema);
+export default Rental;

@@ -106,9 +106,7 @@ const About = () => {
                     all real estate needs.
                   </p>
                 </div>
-                <Button className="mt-6" size="lg">
-                  Join Our Journey
-                </Button>
+                
               </div>
               
               <div className="grid grid-cols-2 gap-4">

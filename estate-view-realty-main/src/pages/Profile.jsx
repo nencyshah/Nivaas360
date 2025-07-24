@@ -1,16 +1,21 @@
-
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect, useCallback } from "react";
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess, signInFailure, signInSuccess, signOutUserStart, signOutUserSuccess, signOutUserFailure } from "../redux/user/userSlice";
+import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  signInSuccess,
+  signOutUserStart,
+  signOutUserSuccess,
+  signOutUserFailure,
+} from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import defaultProfileImg from "../assets/profile.png";
-// import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
   const [uploading, setUploading] = useState(false);
@@ -22,7 +27,21 @@ export default function Profile() {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateError, setUpdateError] = useState(null);
   const [updateSuccess, setUpdateSuccess] = useState(false);
-  // Sign out handler removed
+
+  // Safely get profile image
+  const profileImg = user?.avatar || user?.photo || defaultProfileImg;
+
+  // Prevent rendering if user is null
+  if (!user) {
+    return (
+      <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-lg flex flex-col items-center space-y-6 mt-10">
+        <h1 className="text-4xl font-bold text-center mb-4">Profile</h1>
+        <p className="text-gray-500 text-center">
+          Please sign in to view your profile.
+        </p>
+      </div>
+    );
+  }
 
   const handleFileUpload = useCallback(
     (file) => {
@@ -94,85 +113,65 @@ export default function Profile() {
         navigate("/");
       }
     } catch (err) {
-      setUpdateError("Update failed. Please try again.", err);
+      setUpdateError("Update failed. Please try again.");
     } finally {
       setUpdateLoading(false);
     }
   };
-    const handleDeleteUser = async () => {
-    // Add confirmation dialog
+
+  const handleDeleteUser = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete your account? This action cannot be undone."
     );
-
     if (!confirmDelete) return;
 
     try {
       dispatch(deleteUserStart());
-
       const res = await fetch(`/api/user/delete/${user._id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // ← ADD THIS - Critical fix!
+        credentials: "include",
       });
-
       const data = await res.json();
-      console.log("Delete response:", data); // Debug log
-
       if (res.ok) {
         dispatch(deleteUserSuccess());
-
-        // Clear cookies
         document.cookie =
           "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-        // Navigate to signup page after successful deletion
         navigate("/signup");
-
-        // Show success message
         alert("Account deleted successfully!");
       } else {
         dispatch(deleteUserFailure(data.message || "Failed to delete account"));
       }
     } catch (error) {
-      console.error("Delete error:", error); // Debug log
       dispatch(deleteUserFailure(error.message));
     }
   };
 
   const handleSignOut = async () => {
-  try {
-    dispatch(signOutUserStart());
-    
-    const res = await fetch("/api/auth/signout", { 
-      method: "POST", 
-      credentials: "include",
-    });
-    
-    // Check if response is ok first
-    if (!res.ok) {
-      const errorData = await res.json();
-      dispatch(signOutUserFailure(errorData.message || "Sign out failed"));
-      return;
+    try {
+      dispatch(signOutUserStart());
+      const res = await fetch("/api/auth/signout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        dispatch(signOutUserFailure(errorData.message || "Sign out failed"));
+        return;
+      }
+      await res.json();
+      document.cookie =
+        "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      dispatch(signOutUserSuccess());
+      navigate("/signin");
+    } catch (error) {
+      dispatch(signOutUserFailure(error.message));
     }
-    
-    const data = await res.json();
-    console.log('Signout response:', data); // Debug log
-    
-    // Clear cookie on frontend (with proper options)
-    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; httpOnly=false; secure=false;";
-    
-    dispatch(signOutUserSuccess());
-    navigate("/signin");
-    
-  } catch (error) {
-    console.error('Signout error:', error); // Debug log
-    dispatch(signOutUserFailure(error.message));
-  }
-};
+  };
+
   return (
     <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-lg flex flex-col items-center space-y-6 mt-10">
-      <h1 className="text-4xl font-bold  text-center mb-4">Profile</h1>
+      <h1 className="text-4xl font-bold text-center mb-4">Profile</h1>
       <form
         className="w-full flex flex-col items-center space-y-5"
         onSubmit={handleSubmit}
@@ -186,15 +185,15 @@ export default function Profile() {
         />
         <div className="relative">
           <img
-  onClick={() => fileRef.current.click()}
-  src={user?.avatar && user.avatar !== "" ? user.avatar : profileImg}
-  className="rounded-full h-28 w-28 object-cover border-4 border-indigo-300 shadow-md hover:scale-105 transition-transform duration-300 mb-2 cursor-pointer"
-  alt="Profile"
-  onError={(e) => {
-    e.target.onerror = null;
-    e.target.src = defaultProfileImg; // Fallback to default image on error
-  }}
-/>
+            onClick={() => fileRef.current.click()}
+            src={profileImg}
+            className="rounded-full h-28 w-28 object-cover border-4 border-indigo-300 shadow-md hover:scale-105 transition-transform duration-300 mb-2 cursor-pointer"
+            alt="Profile"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = defaultProfileImg;
+            }}
+          />
           {uploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
               <p className="text-white font-medium">Uploading...</p>
@@ -242,8 +241,12 @@ export default function Profile() {
         </button>
       </form>
       <div className="flex justify-between w-full ">
-        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete account</span>
-        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">Sign out</span>
+        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">
+          Delete account
+        </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
+          Sign out
+        </span>
       </div>
     </div>
   );

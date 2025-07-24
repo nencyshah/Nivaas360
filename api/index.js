@@ -6,6 +6,8 @@ import authRouter from './routes/auth.routes.js'; // Importing authentication ro
 import { listingRouter } from './routes/listing.route.js'; // Importing property listing routes
 import cookieParser from "cookie-parser"; // To parse cookies from requests
 import buyingRouter from './routes/Buying.routes.js'; // Importing buying routes
+import rentalRouter from "./routes/rental.routes.js";
+import contactRouter from './routes/contact.route.js';
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -37,6 +39,8 @@ app.use('/api/user', Userrouter); // User-related routes (e.g., profile, update 
 app.use('/api/auth', authRouter); // Authentication routes (e.g., login, register)
 app.use('/api/listing', listingRouter); // Property listing routes (CRUD for properties)
 app.use("/api/buying", buyingRouter); // Routes for buying transactions
+app.use("/api/rental", rentalRouter);
+app.use('/api/contact', contactRouter);
 
 // ✅ Global Error Handling Middleware
 app.use((err, req, res, next) => {

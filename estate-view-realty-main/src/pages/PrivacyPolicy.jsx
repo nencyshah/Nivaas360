@@ -152,7 +152,7 @@ const PrivacyPolicy = () => {
                     please contact us:
                   </p>
                   <div className="space-y-2 text-muted-foreground">
-                    <p><strong className="text-foreground">Email:</strong> nivvas360@gmail.com</p>
+                    <p><strong className="text-foreground">Email:</strong> nivaas360@gmail.com</p>
                     <p><strong className="text-foreground">Phone:</strong> +91 98765 43210</p>
                     <p><strong className="text-foreground">Address:</strong> 123 Business Center, vadodara, Gujarat 390019</p>
                   </div>
