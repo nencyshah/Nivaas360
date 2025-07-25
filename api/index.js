@@ -1,6 +1,7 @@
 import express from "express"; // Import Express framework
 import mongoose from 'mongoose'; // For MongoDB connection
 import dotenv from 'dotenv'; // To load environment variables from .env file
+import express from 'express';
 import Userrouter from './routes/user.route.js'; // Importing user routes
 import authRouter from './routes/auth.routes.js'; // Importing authentication routes
 import { listingRouter } from './routes/listing.route.js'; // Importing property listing routes
