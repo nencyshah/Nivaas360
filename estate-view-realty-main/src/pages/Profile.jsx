@@ -225,6 +225,7 @@ export default function Profile() {
             onChange={handleChange}
             className="border-2 border-indigo-200 focus:border-indigo-500 p-3 rounded-lg transition-colors duration-200 shadow-sm w-full"
           />
+          
         </div>
         {updateError && (
           <p className="text-red-500 text-sm mt-2">{updateError}</p>

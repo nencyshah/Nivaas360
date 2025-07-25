@@ -124,7 +124,7 @@ const Header = () => {
           {user ? (
             <Link to="/Profile">
               <img
-                className="rounded-full h-7 w-7 object-cover flex md:hidden."
+                className="rounded-full h-7 w-7 object-cover"
                 src={user.avatar}
                 alt="Profile"
                 onError={(e) => {

@@ -59,7 +59,7 @@ export const signin = async (req, res, next) => {
   }
 };
 export const google = async (req, res, next) => {
-  const { username, email, photo } = req.body;
+  const { username, email, photo, role } = req.body;
   try {
     const user = await User.findOne({ email });
     if (user) {
@@ -86,6 +86,7 @@ const newUser = new User({
   avatar:
           photo ||
           "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+  role: role || "buyer",
 });
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
