@@ -29,6 +29,8 @@ import Rent from "./pages/Rent"; // Page listing properties for rent
 import Purchased from "@/pages/Purchased"; // Shows purchased property details
 import Favorites from "@/pages/Favorites";
 // ✅ Create a QueryClient instance for React Query
+// React Router DOM for handling client-side navigation without page reload
+import PropertyDetail from "./pages/PropertyDetail";
 const queryClient = new QueryClient(); 
 // This is used to manage and cache all API calls globally
 
@@ -63,6 +65,7 @@ const App = () => (
           <Route path="/Rent" element={<Rent />} /> {/* List of properties for rent */}
           <Route path="/purchased" element={<Purchased />} /> {/* Purchased properties page */}
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/property/:id" element={<PropertyDetail />} />
         
 
           {/* ✅ Catch-all route: if user navigates to an unknown path, show 404 Not Found page */}

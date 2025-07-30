@@ -23,17 +23,17 @@ const Header = () => {
       : []),
     { name: "About Us", href: "/about" },
     { name: "Contact Us", href: "/contact" },
-   
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    // ...existing code...
+    <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-blue-50 via-white to-blue-100 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link to="/">
-            <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
-              <span className="text-gray-700">Nivaas</span>
-              <span className="text-gray-500">360</span>
+            <h1 className="font-bold text-sm sm:text-xl flex flex-wrap group cursor-pointer transition-transform duration-300 hover:scale-105">
+              <span className="text-[#2eb6f5]">Nivaas</span>
+              <span className="text-[#000000] ml-1">360</span>
             </h1>
           </Link>
 
@@ -43,10 +43,10 @@ const Header = () => {
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "text-sm font-medium transition-all duration-300 text-black hover:text-[#2eb6f5] hover:scale-105",
                   location.pathname === item.href
-                    ? "text-primary"
-                    : "text-muted-foreground"
+                    ? "text-[#2eb6f5] scale-105"
+                    : ""
                 )}
               >
                 {item.name}
@@ -58,16 +58,20 @@ const Header = () => {
             <div className="relative group">
               <Link to="/favorites" className="relative group">
                 <Button variant="ghost" size="icon">
-                  <Heart className="h-4 w-4" />
+                  <Heart
+                    className={`h-4 w-4 ${
+                      favorites.length > 0 ? "animate-pulse text-red-500" : ""
+                    }`}
+                  />
                   {favorites.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center animate-bounce">
                       {favorites.length}
                     </span>
                   )}
                 </Button>
               </Link>
 
-              <div className="absolute right-0 mt-2 w-64 bg-white border rounded-md shadow-lg hidden group-hover:block z-50">
+              <div className="absolute right-0 mt-2 w-64 bg-white border rounded-md shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-2 transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto">
                 <div className="p-2">
                   <h4 className="text-sm font-semibold mb-2">Favorites</h4>
                   {favorites.length === 0 ? (
@@ -77,7 +81,7 @@ const Header = () => {
                       <Link
                         to={`/property/${fav._id}`}
                         key={fav._id}
-                        className="block px-2 py-1 hover:bg-gray-100 text-sm"
+                        className="block px-2 py-1 hover:bg-blue-50 text-sm transition-all duration-200 rounded"
                       >
                         {fav.name}
                       </Link>
@@ -87,22 +91,34 @@ const Header = () => {
               </div>
             </div>
 
-            <Button variant="outline" size="sm" asChild>
-              <a href="/Signup">Sign Up</a>
-            </Button>
+            {!user && (
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="transition-transform duration-300 hover:scale-105"
+              >
+                <a href="/Signup">Sign Up</a>
+              </Button>
+            )}
 
             {user?.role !== "seller" && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => navigate("/purchased")}
+                className="transition-transform duration-300 hover:scale-105"
               >
                 Purchased
               </Button>
             )}
 
             {user?.role === "seller" && (
-              <Button size="sm" onClick={() => navigate("/Createlisting")}>
+              <Button
+                size="sm"
+                onClick={() => navigate("/Createlisting")}
+                className="transition-transform duration-300 hover:scale-105"
+              >
                 Create Listing
               </Button>
             )}
@@ -124,7 +140,7 @@ const Header = () => {
           {user ? (
             <Link to="/Profile">
               <img
-                className="rounded-full h-7 w-7 object-cover"
+                className="rounded-full h-10 w-10 object-cover border-2 border-blue-200 transition-transform duration-300 hover:scale-110"
                 src={user.avatar}
                 alt="Profile"
                 onError={(e) => {
@@ -134,50 +150,18 @@ const Header = () => {
               />
             </Link>
           ) : (
-            <Link to="/signin" className="text-slate-700 hover:underline">
+            <Link
+              to="/signin"
+              className="text-slate-700 hover:underline transition-colors duration-300"
+            >
               Sign in
             </Link>
           )}
         </div>
-
-        {isMenuOpen && (
-          <div className="md:hidden border-t bg-background">
-            <div className="px-2 py-4 space-y-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={cn(
-                    "block px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                    location.pathname === item.href
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  )}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-
-              <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full">
-                  Request Info
-                </Button>
-                <Button
-                  className="w-full"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    navigate("/createlisting");
-                  }}
-                >
-                  List Property
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* ...existing code... */}
       </div>
     </header>
+    // ...existing code...
   );
 };
 

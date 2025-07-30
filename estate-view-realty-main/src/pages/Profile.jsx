@@ -169,86 +169,100 @@ export default function Profile() {
     }
   };
 
+  // ...existing code...
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-lg flex flex-col items-center space-y-6 mt-10">
-      <h1 className="text-4xl font-bold text-center mb-4">Profile</h1>
-      <form
-        className="w-full flex flex-col items-center space-y-5"
-        onSubmit={handleSubmit}
-      >
-        <input
-          onChange={(e) => setFile(e.target.files[0])}
-          type="file"
-          ref={fileRef}
-          hidden
-          accept="image/*"
-        />
-        <div className="relative">
-          <img
-            onClick={() => fileRef.current.click()}
-            src={profileImg}
-            className="rounded-full h-28 w-28 object-cover border-4 border-indigo-300 shadow-md hover:scale-105 transition-transform duration-300 mb-2 cursor-pointer"
-            alt="Profile"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = defaultProfileImg;
-            }}
-          />
-          {uploading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
-              <p className="text-white font-medium">Uploading...</p>
-            </div>
-          )}
-        </div>
-        <div className="w-full flex flex-col space-y-4">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            className="border-2 border-indigo-200 focus:border-indigo-500 p-3 rounded-lg transition-colors duration-200 shadow-sm w-full"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="border-2 border-indigo-200 focus:border-indigo-500 p-3 rounded-lg transition-colors duration-200 shadow-sm w-full"
-          />
-          <input
-            type="text"
-            name="phone"
-            placeholder="Phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="border-2 border-indigo-200 focus:border-indigo-500 p-3 rounded-lg transition-colors duration-200 shadow-sm w-full"
-          />
-          
-        </div>
-        {updateError && (
-          <p className="text-red-500 text-sm mt-2">{updateError}</p>
-        )}
-        {updateSuccess && (
-          <p className="text-green-500 text-sm mt-2">Profile updated!</p>
-        )}
-        <button
-          type="submit"
-          disabled={updateLoading}
-          className="w-full mt-4 px-5 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition-colors duration-200 disabled:opacity-60"
+    <div className="min-h-screen flex items-center justify-center py-12 bg-gradient-to-br from-[#1a1a1a] via-[#2eb6f5] to-[#2eb6f5]">
+      <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-[#2eb6f5]/30 flex flex-col items-center px-8 py-10 space-y-8">
+        <h1 className="text-4xl font-extrabold text-[#2eb6f5] text-center mb-2 tracking-tight">
+          Profile
+        </h1>
+        <form
+          className="w-full flex flex-col items-center space-y-6"
+          onSubmit={handleSubmit}
         >
-          {updateLoading ? "Updating..." : "UPDATE"}
-        </button>
-      </form>
-      <div className="flex justify-between w-full ">
-        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">
-          Delete account
-        </span>
-        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
-          Sign out
-        </span>
+          <input
+            onChange={(e) => setFile(e.target.files[0])}
+            type="file"
+            ref={fileRef}
+            hidden
+            accept="image/*"
+          />
+          <div className="relative group">
+            <img
+              onClick={() => fileRef.current.click()}
+              src={profileImg}
+              className="rounded-full h-36 w-36 object-cover border-4 border-[#2eb6f5] shadow-lg ring-4 ring-[#2eb6f5]/30 hover:ring-[#1a1a1a] transition-all duration-300 cursor-pointer group-hover:scale-105"
+              alt="Profile"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = defaultProfileImg;
+              }}
+            />
+            {uploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full">
+                <p className="text-white font-medium">Uploading...</p>
+              </div>
+            )}
+          </div>
+          <div className="w-full flex flex-col space-y-4">
+            <label className="font-semibold text-[#2eb6f5]">Username</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={formData.username}
+              onChange={handleChange}
+              className="border-2 border-[#2eb6f5]/30 focus:border-[#2eb6f5] p-3 rounded-xl transition-colors duration-200 shadow-sm w-full bg-[#F7FBFF] font-medium"
+            />
+            <label className="font-semibold text-[#2eb6f5]">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="border-2 border-[#2eb6f5]/30 focus:border-[#2eb6f5] p-3 rounded-xl transition-colors duration-200 shadow-sm w-full bg-[#F7FBFF] font-medium"
+            />
+            <label className="font-semibold text-[#2eb6f5]">Phone</label>
+            <input
+              type="text"
+              name="phone"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="border-2 border-[#2eb6f5]/30 focus:border-[#2eb6f5] p-3 rounded-xl transition-colors duration-200 shadow-sm w-full bg-[#F7FBFF] font-medium"
+            />
+          </div>
+          {updateError && (
+            <p className="text-red-500 text-sm mt-2">{updateError}</p>
+          )}
+          {updateSuccess && (
+            <p className="text-green-500 text-sm mt-2">Profile updated!</p>
+          )}
+          <button
+            type="submit"
+            disabled={updateLoading}
+            className="w-full mt-4 px-5 py-3 bg-gradient-to-r from-[#1a1a1a] to-[#2eb6f5] text-white font-bold rounded-xl shadow-lg hover:bg-[#2eb6f5] transition-colors duration-200 disabled:opacity-60"
+          >
+            {updateLoading ? "Updating..." : "UPDATE"}
+          </button>
+        </form>
+        <div className="flex justify-between w-full pt-2">
+          <span
+            onClick={handleDeleteUser}
+            className="text-red-600 font-semibold cursor-pointer hover:underline hover:text-red-700 transition-colors"
+          >
+            Delete account
+          </span>
+          <span
+            onClick={handleSignOut}
+            className="text-[#2eb6f5] font-semibold cursor-pointer hover:underline hover:text-[#1a1a1a] transition-colors"
+          >
+            Sign out
+          </span>
+        </div>
       </div>
     </div>
   );
+  // ...existing code...
 }

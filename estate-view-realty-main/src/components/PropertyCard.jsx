@@ -1,114 +1,203 @@
-import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { Heart, MapPin, Bed, Bath, Square, Verified } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Heart, MapPin, Bed, Bath, Square, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { addToFavorites, removeFromFavorites } from "@/redux/favorite/favoriteSlice";
 
 const PropertyCard = ({ property }) => {
-  const dispatch = useDispatch();
-  const favorites = useSelector((state) => state.favorites.items);
-  const isFavorite = favorites.some((item) => item._id === property._id);
+  const navigate = useNavigate();
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  const handleFavorite = () => {
-    if (isFavorite) {
-      dispatch(removeFromFavorites(property));
-    } else {
-      dispatch(addToFavorites(property));
-    }
+  const handleCardClick = () => {
+    navigate(`/property/${property._id}`);
+  };
+
+  const handleViewDetails = (e) => {
+    e.stopPropagation();
+    navigate(`/property/${property._id}`);
+  };
+
+  const handleFavorite = (e) => {
+    e.stopPropagation();
+    setIsFavorite(!isFavorite);
   };
 
   // Helper to get the correct image src
   const getImageSrc = () => {
-    if (
-      property &&
-      Array.isArray(property.imageUrls) &&
-      property.imageUrls.length > 0
-    ) {
-      const img = property.imageUrls[0];
-      if (!img) return "/placeholder.jpg";
-      return img.startsWith("data:") ? img : `data:image/jpeg;base64,${img}`;
+    if (!property.imageUrls || property.imageUrls.length === 0) {
+      return "/placeholder.jpg";
     }
-    return "/placeholder.jpg";
+
+    const imageUrl = property.imageUrls[0];
+
+    // Handle external URLs
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+      return imageUrl;
+    }
+
+    // Handle base64 images from your backend
+    return imageUrl.startsWith("data:")
+      ? imageUrl
+      : `data:image/jpeg;base64,${imageUrl}`;
   };
 
+  // Calculate discount amount
+  const getDiscountAmount = () => {
+    if (
+      property.offer &&
+      property.discountPrice &&
+      property.discountPrice < property.regularPrice
+    ) {
+      return property.regularPrice - property.discountPrice;
+    }
+    return 0;
+  };
+
+  const discountAmount = getDiscountAmount();
+
   return (
-    <div className="group bg-card rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden">
-      {/* Image Container */}
+    <div
+      className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#2eb6f5]/20 overflow-hidden transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl cursor-pointer will-change-transform"
+      onClick={handleCardClick}
+    >
+      {/* Image Section */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={getImageSrc()}
           alt={property.name || "Property"}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 will-change-transform"
+          onError={(e) => {
+            e.target.src = "/placeholder.jpg";
+          }}
+          loading="lazy"
         />
 
-        {/* Verified badge */}
-        {property.verified && (
-          <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs flex items-center">
-            <Verified className="w-4 h-4 mr-1" /> Verified
-          </span>
+        {/* Simplified Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+
+        {/* Favorite Button - Optimized */}
+        <button
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md transition-transform duration-200 hover:scale-110 z-10 will-change-transform"
+          onClick={handleFavorite}
+          aria-label="Add to favorites"
+        >
+          <Heart
+            className={`w-5 h-5 transition-colors duration-200 ${
+              isFavorite
+                ? "fill-red-500 text-red-500"
+                : "text-gray-400 hover:text-red-400"
+            }`}
+          />
+        </button>
+
+        {/* Optimized Hover Overlay */}
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <Button
+            onClick={handleViewDetails}
+            size="sm"
+            className="bg-[#2eb6f5] hover:bg-[#1e90ff] text-white transition-colors duration-200 shadow-md"
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            View Details
+          </Button>
+        </div>
+
+        {/* Status Badge */}
+        {property.status && (
+          <Badge
+            className={`absolute top-4 left-4 ${
+              property.status === "sell" ? "bg-green-600" : "bg-blue-600"
+            } text-white font-bold shadow-md`}
+          >
+            For {property.status === "sell" ? "Sale" : "Rent"}
+          </Badge>
         )}
 
-        {/* Favorite button */}
-        <button
-          className="absolute top-2 right-2 bg-white rounded-full p-2 shadow"
-          onClick={handleFavorite}
-        >
-          <Heart className={isFavorite ? "fill-red-500 text-red-500" : ""} />
-        </button>
+        {/* Price Badge */}
+        <span className="absolute bottom-4 left-4 bg-[#2eb6f5] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm">
+          ₹{property.regularPrice?.toLocaleString()}
+          {property.status === "rent" && (
+            <span className="text-xs font-normal ml-1">/month</span>
+          )}
+        </span>
+
+        {/* Offer Badge - Removed animate-pulse for performance */}
+        {property.offer && discountAmount > 0 && (
+          <Badge className="absolute top-14 left-4 bg-red-500 text-white font-bold shadow-md">
+            Save ₹{discountAmount.toLocaleString()}
+          </Badge>
+        )}
       </div>
 
-      {/* Details */}
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-semibold text-foreground">
-            {property.name}
-          </h3>
-          <span className="text-primary font-bold text-xl">
-            ₹{property.regularPrice}
-            {property.type === "rent" && (
-              <span className="text-xs font-normal text-muted-foreground">
-                {" "} /month
-              </span>
-            )}
-          </span>
+      {/* Content Section */}
+      <div className="p-5">
+        <h3 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2 group-hover:text-[#2eb6f5] transition-colors duration-300">
+          {property.name}
+          {property.offer && (
+            <Badge className="bg-yellow-400 text-black font-bold">Offer</Badge>
+          )}
+        </h3>
+
+        <div className="flex items-center text-gray-500 text-sm mb-2">
+          <MapPin className="w-4 h-4 mr-1 text-[#2eb6f5]" />
+          <span className="truncate">{property.address}</span>
         </div>
 
-        <div className="text-muted-foreground text-sm mb-2 flex items-center">
-          <MapPin className="w-4 h-4 mr-1" />
-          {property.address}
+        <p className="text-gray-700 text-sm mb-3 line-clamp-2">
+          {property.description}
+        </p>
+
+        <div className="flex items-center gap-4 text-sm font-medium mb-3">
+          <span className="flex items-center gap-1">
+            <Bed className="w-4 h-4 text-[#2eb6f5]" /> {property.bedrooms}
+          </span>
+          <span className="flex items-center gap-1">
+            <Bath className="w-4 h-4 text-[#2eb6f5]" /> {property.bathrooms}
+          </span>
+          {property.area && (
+            <span className="flex items-center gap-1">
+              <Square className="w-4 h-4 text-[#2eb6f5]" /> {property.area}
+            </span>
+          )}
         </div>
 
-        <div className="text-sm mb-2">{property.description}</div>
-
-        <div className="flex items-center gap-4 text-sm mb-2">
-          <span className="flex items-center">
-            <Bed className="w-4 h-4 mr-1" />
-            {property.bedrooms} Beds
-          </span>
-          <span className="flex items-center">
-            <Bath className="w-4 h-4 mr-1" />
-            {property.bathrooms} Baths
-          </span>
-          <span className="flex items-center">
-            <Square className="w-4 h-4 mr-1" />
-            {property.area || "N/A"}
-          </span>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {property.parking && (
+            <Badge
+              variant="outline"
+              className="text-blue-700 border-blue-200 text-xs"
+            >
+              Parking
+            </Badge>
+          )}
+          {property.furnished && (
+            <Badge
+              variant="outline"
+              className="text-pink-700 border-pink-200 text-xs"
+            >
+              Furnished
+            </Badge>
+          )}
+          {property.type && (
+            <Badge
+              variant="outline"
+              className="text-gray-700 border-gray-200 text-xs capitalize"
+            >
+              {property.type}
+            </Badge>
+          )}
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-2">
-          {property.parking && <Badge>Parking</Badge>}
-          {property.furnished && <Badge>Furnished</Badge>}
-          {property.offer && <Badge>Offer</Badge>}
-          {property.type && <Badge>{property.type}</Badge>}
-        </div>
-
-        {/* Discount price */}
-        {property.discountPrice > 0 && (
-          <div className="text-green-600 font-semibold">
-            Discount: ₹{property.discountPrice}
+        {/* Simplified Discount Display */}
+        {property.offer && discountAmount > 0 && (
+          <div className="text-green-600 font-semibold text-sm">
+            Save ₹{discountAmount.toLocaleString()}!
           </div>
         )}
       </div>
+
+      {/* Simplified Decorative Glow */}
+      <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-[#2eb6f5] opacity-10 rounded-full blur-xl pointer-events-none group-hover:opacity-20 transition-opacity duration-500"></div>
     </div>
   );
 };
