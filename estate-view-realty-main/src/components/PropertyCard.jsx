@@ -3,10 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Heart, MapPin, Bed, Bath, Square, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useDispatch, useSelector } from "react-redux";
+import { addToFavorites, removeFromFavorites } from "@/redux/favorite/favoriteSlice";
 
 const PropertyCard = ({ property }) => {
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState(false);
+  // const [isFavorite, setIsFavorite] = useState(false);
+  const dispatch = useDispatch();
+const favorites = useSelector((state) => state.favorites.items);
+const isFavorite = favorites.some((fav) => fav._id === property._id);
+  
 
   const handleCardClick = () => {
     navigate(`/property/${property._id}`);
@@ -18,9 +24,13 @@ const PropertyCard = ({ property }) => {
   };
 
   const handleFavorite = (e) => {
-    e.stopPropagation();
-    setIsFavorite(!isFavorite);
-  };
+  e.stopPropagation();
+  if (isFavorite) {
+    dispatch(removeFromFavorites(property));
+  } else {
+    dispatch(addToFavorites(property));
+  }
+};
 
   // Helper to get the correct image src
   const getImageSrc = () => {
