@@ -15,7 +15,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/listing")
+    fetch(`${import.meta.env.VITE_API_URL}/api/listing`)
       .then((res) => res.json())
       .then((data) => {
         setProperties(data);

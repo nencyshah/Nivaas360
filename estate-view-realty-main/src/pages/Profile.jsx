@@ -53,7 +53,7 @@ export default function Profile() {
       reader.onload = async () => {
         try {
           const base64Image = reader.result;
-          const res = await fetch(`/api/user/upload/${user._id}`, {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/upload/${user._id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ avatar: base64Image }),
@@ -99,7 +99,7 @@ export default function Profile() {
     setUpdateError(null);
     setUpdateSuccess(false);
     try {
-      const res = await fetch(`/api/user/update/${user._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update/${user._id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -127,7 +127,7 @@ export default function Profile() {
 
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${user._id}`, {
+      const res = await fetch (`${import.meta.env.VITE_API_URL}/api/user/delete/${user._id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -150,7 +150,7 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch("/api/auth/signout", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signout`, {
         method: "POST",
         credentials: "include",
       });
@@ -169,7 +169,6 @@ export default function Profile() {
     }
   };
 
-  // ...existing code...
   return (
     <div className="min-h-screen flex items-center justify-center py-12 bg-gradient-to-br from-[#1a1a1a] via-[#2eb6f5] to-[#2eb6f5]">
       <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-[#2eb6f5]/30 flex flex-col items-center px-8 py-10 space-y-8">
@@ -264,5 +263,4 @@ export default function Profile() {
       </div>
     </div>
   );
-  // ...existing code...
 }

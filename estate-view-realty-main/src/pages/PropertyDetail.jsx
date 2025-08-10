@@ -39,7 +39,9 @@ const PropertyDetail = () => {
 
         console.log("Fetching property with ID:", id);
 
-        const response = await fetch(`/api/listing/${id}`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/listing/${id}`
+        );
 
         if (!response.ok) {
           if (response.status === 404) {

@@ -23,8 +23,12 @@ const Rent = () => {
 
     // Fetch all rent listings and user's rental offers
     Promise.all([
-      fetch("/api/listing?type=rent").then((res) => res.json()),
-      fetch(`/api/rental?renterId=${user._id}`).then((res) => res.json()),
+      fetch(`${import.meta.env.VITE_API_URL}/api/listing?type=rent`).then(
+        (res) => res.json()
+      ),
+      fetch(`${import.meta.env.VITE_API_URL}/api/rental?renterId=${user._id}`).then(
+        (res) => res.json()
+      ),
     ])
       .then(([allProperties, rentals]) => {
         // Get all listingIds the user has made an offer on
@@ -50,7 +54,7 @@ const Rent = () => {
     const duration = "12"; // TODO: Make this dynamic with input (in months)
 
     try {
-      const res = await fetch("/api/rental/create", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/rental/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

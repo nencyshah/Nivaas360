@@ -19,8 +19,10 @@ const Purchased = () => {
 
     // Fetch both buying and rental offers
     Promise.all([
-      fetch(`/api/buying?buyerId=${user._id}`).then((res) => res.json()),
-      fetch(`/api/rental?renterId=${user._id}`).then((res) => res.json()),
+      fetch(`${import.meta.env.VITE_API_URL}/api/buying?buyerId=${user._id}`)
+        .then((res) => res.json()),
+      fetch(`${import.meta.env.VITE_API_URL}/api/rental?renterId=${user._id}`)
+        .then((res) => res.json()),
     ])
       .then(([buyingData, rentalData]) => {
         setBuyings(buyingData || []);
@@ -37,7 +39,7 @@ const Purchased = () => {
   const handleRemoveOffer = async (offerId, type) => {
     const endpoint = type === "Buy" ? "/api/buying" : "/api/rental";
     try {
-      const res = await fetch(`${endpoint}/${offerId}`, { method: "DELETE" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}/${offerId}`, { method: "DELETE" });
       if (res.ok) {
         if (type === "Buy") {
           setBuyings((prev) => prev.filter((offer) => offer._id !== offerId));

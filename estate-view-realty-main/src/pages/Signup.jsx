@@ -47,7 +47,7 @@ export default function Signup() {
         : "/api/auth/signup/buyer";
 
     try {
-      const res = await fetch(endpoint, {
+     const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

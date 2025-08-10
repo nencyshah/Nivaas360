@@ -23,8 +23,8 @@ const Buy = () => {
 
     // Fetch all sale listings
     Promise.all([
-      fetch("/api/listing?type=sale").then((res) => res.json()),
-      fetch(`/api/buying?buyerId=${user._id}`).then((res) => res.json()),
+      fetch(`${import.meta.env.VITE_API_URL}/api/listing?type=sale`).then((res) => res.json()),
+      fetch(`${import.meta.env.VITE_API_URL}/api/buying?buyerId=${user._id}`).then((res) => res.json()),
     ])
       .then(([allProperties, buyings]) => {
         // Get all listingIds the user has made an offer on
@@ -51,7 +51,7 @@ const Buy = () => {
     const duration = null; // Add this field (not required for buy, but expected by controller)
 
     try {
-      const res = await fetch("/api/buying/create", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/buying/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
