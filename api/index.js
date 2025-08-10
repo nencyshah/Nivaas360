@@ -27,7 +27,7 @@ const app = express(); // Create an Express application instance
 // ✅ Middlewares
 app.use(
   cors({
-    origin: "https://your-frontend.vercel.app", // Replace with your actual deployed frontend URL
+    origin: "https://estate-view-realty-main.vercel.apphttps://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app/", // Replace with your actual deployed frontend URL
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
