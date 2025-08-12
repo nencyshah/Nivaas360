@@ -27,7 +27,10 @@ const app = express(); // Create an Express application instance
 // ✅ Middlewares
 app.use(
   cors({
-    origin: "https://estate-view-realty-main.vercel.apphttps://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app/", // Replace with your actual deployed frontend URL
+    origin: [
+      "https://estate-view-realty-main.vercel.app",
+      "https://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -45,6 +48,11 @@ app.use("/api/listing", listingRouter); // Property listing routes (CRUD for pro
 app.use("/api/buying", buyingRouter); // Routes for buying transactions
 app.use("/api/rental", rentalRouter);
 app.use("/api/contact", contactRouter);
+
+// Health check route
+app.get("/", (req, res) => {
+  res.send("API is running!");
+});
 
 // ✅ Global Error Handling Middleware
 app.use((err, req, res, next) => {
