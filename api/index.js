@@ -24,12 +24,37 @@ mongoose
 
 const app = express(); // Create an Express application instance
 
+// ✅ CORS Middleware (Backup)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log('Backup CORS middleware - Origin:', origin);
+  
+  if (origin && (origin.includes('vercel.app') || origin.includes('localhost'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);
+    return;
+  }
+  
+  next();
+});
+
 // ✅ Middlewares
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log('CORS check for origin:', origin);
+      
       // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        console.log('No origin, allowing request');
+        return callback(null, true);
+      }
       
       const allowedOrigins = [
         "https://estate-view-realty-main.vercel.app",
@@ -43,14 +68,18 @@ app.use(
       
       // Allow any Vercel deployment URL
       if (origin.includes('vercel.app') || allowedOrigins.includes(origin)) {
+        console.log('Origin allowed:', origin);
         return callback(null, true);
       }
       
+      console.log('Origin blocked:', origin);
       return callback(new Error('Not allowed by CORS'));
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 );
 
@@ -88,6 +117,17 @@ app.get("/api/contact/test", (req, res) => {
   console.log("Contact test endpoint called");
   res.json({
     message: "Contact API is working!",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// CORS test endpoint
+app.get("/api/cors-test", (req, res) => {
+  console.log("CORS test endpoint called");
+  console.log("Origin:", req.headers.origin);
+  res.json({
+    message: "CORS is working!",
+    origin: req.headers.origin,
     timestamp: new Date().toISOString()
   });
 });

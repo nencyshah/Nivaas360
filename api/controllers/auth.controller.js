@@ -46,6 +46,8 @@ export const signupSeller = (req, res, next) =>
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   console.log("Signin attempt for email:", email);
+  console.log("Request headers:", req.headers);
+  console.log("Request origin:", req.headers.origin);
   try {
     const validUser = await User.findOne({ email });
     if (!validUser) return next(errorHandler(404, 'User not found!'));
