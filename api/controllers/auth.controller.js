@@ -4,6 +4,7 @@ import{ errorHandler } from "../utils/error.js"; // Importing error handler util
 import jwt from "jsonwebtoken"; // Importing JWT for token generation
 export const signup = async (req, res, next, role) => {
   const { username, email, password } = req.body;
+  console.log("Signup attempt for role:", role, "email:", email);
 
   // Validation: username must be present
   if (!username) {
@@ -18,9 +19,10 @@ export const signup = async (req, res, next, role) => {
     await newuser.save();
     res
       .status(201)
-      .json(
-        `${role.charAt(0).toUpperCase() + role.slice(1)} created successfully`
-      );
+      .json({
+        success: true,
+        message: `${role.charAt(0).toUpperCase() + role.slice(1)} created successfully`
+      });
   } catch (error) {
     // Handle duplicate email error
     if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
@@ -43,6 +45,7 @@ export const signupSeller = (req, res, next) =>
   signup(req, res, next, "seller");
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log("Signin attempt for email:", email);
   try {
     const validUser = await User.findOne({ email });
     if (!validUser) return next(errorHandler(404, 'User not found!'));
@@ -71,37 +74,36 @@ export const google = async (req, res, next) => {
         .json(rest);
     }
     else {
-      const generatedPassword = Math.random().toString(36).slice(-8)+ Math.random().toString(36).slice(-8); // Generate a random password;
+      const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8); // Generate a random password
       const hashedPassword = bcrypt.hashSync(generatedPassword, 10); // Hash the generated password
-     const rawUsername = req.body.username;
-const processedUsername =
-  rawUsername && typeof rawUsername === "string" && rawUsername.trim().length > 0
-    ? rawUsername.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4)
-    : "user" + Math.random().toString(36).slice(-4);
+      const rawUsername = req.body.username;
+      const processedUsername =
+        rawUsername && typeof rawUsername === "string" && rawUsername.trim().length > 0
+          ? rawUsername.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4)
+          : "user" + Math.random().toString(36).slice(-4);
 
-const newUser = new User({
-  username: processedUsername,
-  email: req.body.email,
-  password: hashedPassword,
-  avatar:
+      const newUser = new User({
+        username: processedUsername,
+        email: req.body.email,
+        password: hashedPassword,
+        avatar:
           photo ||
           "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-  role: role || "buyer",
-});
+        role: role || "buyer",
+      });
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
       const { password, ...rest } = newUser._doc;
-       res
+      res
         .cookie('access_token', token, { httpOnly: true })
         .status(200)
         .json(rest);
     }
   }
-   
   catch (error) {
     next(error);
   }
-}
+};
 // Upload profile image
 export const uploadProfileImage = async (req, res, next) => {
   try {

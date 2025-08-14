@@ -29,10 +29,15 @@ app.use(
   cors({
     origin: [
       "https://estate-view-realty-main.vercel.app",
-      "https://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app"
+      "https://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://nivaas360.vercel.app",
+      "https://estate-view-realty.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -40,6 +45,12 @@ app.use(
 app.use(express.json({ limit: "10mb" })); // Allows large JSON requests (like images)
 app.use(express.urlencoded({ limit: "10mb", extended: true })); // Handles URL-encoded form data
 app.use(cookieParser()); // Parses cookies from incoming requests
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // ✅ Define API routes
 app.use("/api/user", Userrouter); // User-related routes (e.g., profile, update user)
@@ -51,7 +62,21 @@ app.use("/api/contact", contactRouter);
 
 // Health check route
 app.get("/", (req, res) => {
-  res.send("API is running!");
+  console.log("Health check endpoint called");
+  res.json({
+    message: "API is running!",
+    timestamp: new Date().toISOString(),
+    status: "healthy"
+  });
+});
+
+// Test route for contact
+app.get("/api/contact/test", (req, res) => {
+  console.log("Contact test endpoint called");
+  res.json({
+    message: "Contact API is working!",
+    timestamp: new Date().toISOString()
+  });
 });
 
 // ✅ Global Error Handling Middleware

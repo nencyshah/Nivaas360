@@ -61,7 +61,7 @@ export default function Signup() {
         data = JSON.parse(text);
       }
 
-      if (data.success === false) {
+      if (!res.ok) {
         setLoading(false);
         if (
           data.message &&
@@ -76,13 +76,8 @@ export default function Signup() {
       }
 
       setLoading(false);
-      if (res.ok) {
-        showNotification("Signup successful!", "success");
-        setTimeout(() => navigate("/signin"), 1500);
-      } else {
-        showNotification(data.message || "Signup failed!", "error");
-        setLoading(false);
-      }
+      showNotification("Signup successful!", "success");
+      setTimeout(() => navigate("/signin"), 1500);
     } catch (error) {
       showNotification("An error occurred. Please try again.", "error");
       setLoading(false);

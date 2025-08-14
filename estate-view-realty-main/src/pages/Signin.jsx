@@ -7,6 +7,7 @@ import {
   signInFailure,
 } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
+import ApiTest from "../components/ApiTest";
 import { Eye, EyeOff, Mail, Lock, Home, ArrowRight } from "lucide-react";
 
 export default function Signin() {
@@ -50,8 +51,8 @@ export default function Signin() {
       });
 
       const data = await res.json();
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
+      if (!res.ok) {
+        dispatch(signInFailure(data.message || "Sign in failed!"));
         showNotification(data.message || "Sign in failed!", "error");
         return;
       }
@@ -252,6 +253,11 @@ export default function Signin() {
             <p className="text-sm text-gray-500">
               Secure login with end-to-end encryption
             </p>
+          </div>
+          
+          {/* API Test Component */}
+          <div className="mt-4">
+            <ApiTest />
           </div>
         </div>
       </div>
