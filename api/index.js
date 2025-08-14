@@ -27,14 +27,27 @@ const app = express(); // Create an Express application instance
 // ✅ Middlewares
 app.use(
   cors({
-    origin: [
-      "https://estate-view-realty-main.vercel.app",
-      "https://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app",
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "https://nivaas360.vercel.app",
-      "https://estate-view-realty.vercel.app"
-    ],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = [
+        "https://estate-view-realty-main.vercel.app",
+        "https://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app",
+        "https://nivaas360-mzzhvbhgn-nency-shahs-projects-c244a2f5.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://nivaas360.vercel.app",
+        "https://estate-view-realty.vercel.app"
+      ];
+      
+      // Allow any Vercel deployment URL
+      if (origin.includes('vercel.app') || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      return callback(new Error('Not allowed by CORS'));
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -48,7 +61,7 @@ app.use(cookieParser()); // Parses cookies from incoming requests
 
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.headers.origin || 'No origin'}`);
   next();
 });
 
