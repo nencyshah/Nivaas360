@@ -47,39 +47,8 @@ app.use((req, res, next) => {
 // ✅ Middlewares
 app.use(
   cors({
-    origin: function (origin, callback) {
-      console.log('CORS check for origin:', origin);
-      
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) {
-        console.log('No origin, allowing request');
-        return callback(null, true);
-      }
-      
-      const allowedOrigins = [
-        "https://estate-view-realty-main.vercel.app",
-        "https://nivaas360-bw37t4jn6-nency-shahs-projects-c244a2f5.vercel.app",
-        "https://nivaas360-mzzhvbhgn-nency-shahs-projects-c244a2f5.vercel.app",
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://nivaas360.vercel.app",
-        "https://estate-view-realty.vercel.app"
-      ];
-      
-      // Allow any Vercel deployment URL
-      if (origin.includes('vercel.app') || allowedOrigins.includes(origin)) {
-        console.log('Origin allowed:', origin);
-        return callback(null, true);
-      }
-      
-      console.log('Origin blocked:', origin);
-      return callback(new Error('Not allowed by CORS'));
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: process.env.VITE_FRONTEND_URL, // Use value from .env
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    preflightContinue: false,
-    optionsSuccessStatus: 204
   })
 );
 
