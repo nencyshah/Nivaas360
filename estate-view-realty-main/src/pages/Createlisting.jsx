@@ -15,7 +15,6 @@ import {
   Tag,
 } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function CreateListing() {
   const { user } = useSelector((state) => state.user);
@@ -163,14 +162,17 @@ export default function CreateListing() {
         userRef: user._id,
       };
 
-      const res = await fetch(`${API_URL}/api/listing/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(listingData),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/listing/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(listingData),
+        }
+      );
 
       const data = await res.json();
       setLoading(false);
