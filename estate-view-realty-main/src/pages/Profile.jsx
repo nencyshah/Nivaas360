@@ -56,6 +56,7 @@ export default function Profile() {
           const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/upload/${user._id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ avatar: base64Image }),
           });
 
@@ -102,6 +103,7 @@ export default function Profile() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/update/${user._id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
       const data = await res.json();

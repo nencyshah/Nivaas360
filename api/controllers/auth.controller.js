@@ -4,34 +4,40 @@ import{ errorHandler } from "../utils/error.js"; // Importing error handler util
 import jwt from "jsonwebtoken"; // Importing JWT for token generation
 export const signup = async (req, res, next, role) => {
   const { username, email, password } = req.body;
-  console.log("Signup attempt for role:", role, "email:", email);
 
-  // Validation: username must be present
   if (!username) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Username is required" });
+    return res.status(400).json({
+      success: false,
+      message: "Username is required",
+    });
   }
 
-  const hashedPassword = bcrypt.hashSync(password, 10); // Hashing the password
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const newuser = new User({ username, email, password: hashedPassword, role });
+
   try {
     await newuser.save();
+
+    // Create JWT and set cookie
+    const token = jwt.sign({ id: newuser._id }, process.env.JWT_SECRET);
+    const { password: pass, ...rest } = newuser._doc;
+
     res
+      .cookie("access_token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
       .status(201)
-      .json({
-        success: true,
-        message: `${role.charAt(0).toUpperCase() + role.slice(1)} created successfully`
-      });
+      .json(rest);
   } catch (error) {
-    // Handle duplicate email error
     if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
       return res.status(400).json({
         success: false,
         message: "User already exists with this email!",
       });
     }
-    // For all other errors, send a generic message
     res.status(500).json({
       success: false,
       message: "Something went wrong. Please try again later.",
@@ -45,18 +51,23 @@ export const signupSeller = (req, res, next) =>
   signup(req, res, next, "seller");
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log("Signin attempt for email:", email);
-  console.log("Request headers:", req.headers);
-  console.log("Request origin:", req.headers.origin);
   try {
     const validUser = await User.findOne({ email });
-    if (!validUser) return next(errorHandler(404, 'User not found!'));
+    if (!validUser) return next(errorHandler(404, "User not found!"));
+
     const validPassword = bcrypt.compareSync(password, validUser.password);
-    if (!validPassword) return next(errorHandler(401, 'Wrong credentials!'));
+    if (!validPassword) return next(errorHandler(401, "Wrong credentials!"));
+
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = validUser._doc;
+
     res
-      .cookie('access_token', token, { httpOnly: true })
+      .cookie("access_token", token, {
+        httpOnly: true,
+        secure: true, // 🔑 important
+        sameSite: "none", // 🔑 important
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
       .status(200)
       .json(rest);
   } catch (error) {
@@ -71,17 +82,21 @@ export const google = async (req, res, next) => {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password, ...rest } = user._doc;
       return res
-        .cookie('access_token', token, { httpOnly: true })
+        .cookie("access_token", token, { httpOnly: true })
         .status(200)
         .json(rest);
-    }
-    else {
-      const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8); // Generate a random password
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8); // Generate a random password;
       const hashedPassword = bcrypt.hashSync(generatedPassword, 10); // Hash the generated password
       const rawUsername = req.body.username;
       const processedUsername =
-        rawUsername && typeof rawUsername === "string" && rawUsername.trim().length > 0
-          ? rawUsername.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4)
+        rawUsername &&
+        typeof rawUsername === "string" &&
+        rawUsername.trim().length > 0
+          ? rawUsername.split(" ").join("").toLowerCase() +
+            Math.random().toString(36).slice(-4)
           : "user" + Math.random().toString(36).slice(-4);
 
       const newUser = new User({
@@ -97,12 +112,11 @@ export const google = async (req, res, next) => {
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
       const { password, ...rest } = newUser._doc;
       res
-        .cookie('access_token', token, { httpOnly: true })
+        .cookie("access_token", token, { httpOnly: true })
         .status(200)
         .json(rest);
     }
-  }
-  catch (error) {
+  } catch (error) {
     next(error);
   }
 };
