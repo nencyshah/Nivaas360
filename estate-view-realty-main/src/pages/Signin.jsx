@@ -257,7 +257,12 @@ export default function Signin() {
               Secure login with end-to-end encryption
             </p>
           </div>
+                    {/* CORS Test Component */}
+          <div className="mt-4">
+            <CorsTest />
+          </div>
         </div>
+
       </div>
 
       {/* CSS Animations */}
