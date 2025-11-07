@@ -22,4 +22,4 @@ Database: MongoDB
 
 Authentication: JWT + Google OAuth
 
-Hosting: (e.g., Vercel for frontend, Render/Heroku for backend)
+Hosting: (e.g., Vercel for frontend, Render for backend)
