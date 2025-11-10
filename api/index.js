@@ -17,14 +17,7 @@ const PORT = 3000;
 
 app.use(
   cors({
-    origin: [
-      "https://real-estate-frontend-zeta-blond.vercel.app",
-      "https://real-estate-backend-alpha-seven.vercel.app",
-      "https://real-estate-backend-seven-gamma.vercel.app",
-      "https://real-estate-nine-ecru.vercel.app",
-      "https://nivaas360-frontend.vercel.app",
-      "https://nivaas360.onrender.com",
-    ],
+    origin: process.env.VITE_FRONTEND_URL, // Use value from .env
     credentials: true,
   })
 );
