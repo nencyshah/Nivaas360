@@ -29,7 +29,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import heroImage from "@/assets/hero-home.jpg";
 
-const API_URL = "/api/listing";
+const API_URL = import.meta.env.VITE_BACKEND_URL + "/api/listing";
 
 const HeroSection = () => {
   const [address, setAddress] = useState("");
@@ -363,7 +363,7 @@ const HeroSection = () => {
           )}
 
           {/* Enhanced Animated Stats */}
-          <div className="grid grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto">
+          <div className="grid grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto mb-10">
             {stats.map((stat, index) => (
               <div
                 key={index}

@@ -1,168 +1,329 @@
 import { useState } from "react";
-import { Menu, X, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import {
+  Menu,
+  X,
+  Heart,
+  Home,
+  ShoppingBag,
+  Info,
+  Mail,
+  CheckCircle,
+  PlusCircle,
+} from "lucide-react";
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const favorites = useSelector((state) => state.favorites.items);
-  const navigate = useNavigate();
-  const location = useLocation();
+export default function Header() {
   const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const navItems = [
-    { name: "Home", href: "/" },
-    ...(user?.role !== "seller"
-      ? [
-          { name: "Buy", href: "/buy" },
-          { name: "Rent", href: "/rent" },
-        ]
-      : []),
-    { name: "About Us", href: "/about" },
-    { name: "Contact Us", href: "/contact" },
-  ];
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    closeMobileMenu();
+  };
 
   return (
-    // ...existing code...
-    <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-blue-50 via-white to-blue-100 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <Link to="/">
-            <h1 className="font-bold text-sm sm:text-xl flex flex-wrap group cursor-pointer transition-transform duration-300 hover:scale-105">
-              <span className="text-[#2eb6f5]">Nivaas</span>
-              <span className="text-[#000000] ml-1">360</span>
-            </h1>
-          </Link>
+    <>
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-lg border-b border-[#2eb6f5]/10">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <Link
+              to="/"
+              className="flex items-center space-x-2 group"
+              onClick={closeMobileMenu}
+            >
+              <div className="flex items-center gap-1">
+                <span className="text-2xl md:text-3xl font-bold text-[#2eb6f5]">
+                  Nivaas
+                </span>
+                <span className="text-2xl md:text-3xl font-bold text-gray-900">
+                  360
+                </span>
+              </div>
+            </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-8">
               <Link
-                key={item.name}
-                to={item.href}
-                className={cn(
-                  "text-sm font-medium transition-all duration-300 text-black hover:text-[#2eb6f5] hover:scale-105",
-                  location.pathname === item.href
-                    ? "text-[#2eb6f5] scale-105"
-                    : ""
-                )}
+                to="/"
+                className="text-gray-700 hover:text-[#2eb6f5] font-medium transition-all duration-300 hover:scale-105 relative group"
               >
-                {item.name}
+                Home
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#2eb6f5] group-hover:w-full transition-all duration-300"></span>
               </Link>
-            ))}
-          </nav>
+              <Link
+                to="/buy"
+                className="text-gray-700 hover:text-[#2eb6f5] font-medium transition-all duration-300 hover:scale-105 relative group"
+              >
+                Buy
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#2eb6f5] group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link
+                to="/rent"
+                className="text-gray-700 hover:text-[#2eb6f5] font-medium transition-all duration-300 hover:scale-105 relative group"
+              >
+                Rent
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#2eb6f5] group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link
+                to="/about"
+                className="text-gray-700 hover:text-[#2eb6f5] font-medium transition-all duration-300 hover:scale-105 relative group"
+              >
+                About Us
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#2eb6f5] group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link
+                to="/contact"
+                className="text-gray-700 hover:text-[#2eb6f5] font-medium transition-all duration-300 hover:scale-105 relative group"
+              >
+                Contact Us
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#2eb6f5] group-hover:w-full transition-all duration-300"></span>
+              </Link>
+            </nav>
 
-          <div className="hidden md:flex items-center space-x-2">
-            <div className="relative group">
-              <Link to="/favorites" className="relative group">
-                <Button variant="ghost" size="icon">
-                  <Heart
-                    className={`h-4 w-4 ${
-                      favorites.length > 0 ? "animate-pulse text-red-500" : ""
-                    }`}
+            {/* Desktop Right Section */}
+            <div className="hidden lg:flex items-center space-x-4">
+              <Link
+                to="/favorites"
+                className="relative p-2.5 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+              >
+                <Heart className="h-6 w-6 text-gray-700 group-hover:text-[#2eb6f5] group-hover:scale-110 transition-all duration-300" />
+              </Link>
+
+              {/* Purchased Button - Only for Buyers */}
+              {user && user.role === "buyer" && (
+                <Link
+                  to="/purchased"
+                  className="px-4 py-2.5 bg-white border-2 border-[#2eb6f5] text-[#2eb6f5] rounded-xl hover:bg-[#2eb6f5] hover:text-white hover:shadow-lg transition-all duration-300 font-medium flex items-center space-x-2"
+                >
+                  <CheckCircle className="h-5 w-5" />
+                  <span>Purchased</span>
+                </Link>
+              )}
+
+              {/* Create Listing Button - Only for Sellers */}
+              {user && user.role === "seller" && (
+                <Link
+                  to="/createlisting"
+                  className="px-4 py-2.5 bg-white border-2 border-[#2eb6f5] text-[#2eb6f5] rounded-xl hover:bg-[#2eb6f5] hover:text-white hover:shadow-lg transition-all duration-300 font-medium flex items-center space-x-2"
+                >
+                  <PlusCircle className="h-5 w-5" />
+                  <span>Create Listing</span>
+                </Link>
+              )}
+
+              {user ? (
+                <Link
+                  to="/profile"
+                  className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-[#2eb6f5] to-[#1e90ff] text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300"
+                >
+                  <img
+                    src={user.avatar || user.photo}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover border-2 border-white"
                   />
-                  {favorites.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center animate-bounce">
-                      {favorites.length}
-                    </span>
-                  )}
-                </Button>
-              </Link>
+                  <span className="font-medium">{user.username}</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/signin"
+                  className="px-6 py-2.5 bg-gradient-to-r from-[#2eb6f5] to-[#1e90ff] text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 font-medium"
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
 
-              <div className="absolute right-0 mt-2 w-64 bg-white border rounded-md shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-2 transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto">
-                <div className="p-2">
-                  <h4 className="text-sm font-semibold mb-2">Favorites</h4>
-                  {favorites.length === 0 ? (
-                    <p className="text-sm text-gray-500">No favorites yet.</p>
-                  ) : (
-                    favorites.map((fav) => (
-                      <Link
-                        to={`/property/${fav._id}`}
-                        key={fav._id}
-                        className="block px-2 py-1 hover:bg-blue-50 text-sm transition-all duration-200 rounded"
-                      >
-                        {fav.name}
-                      </Link>
-                    ))
-                  )}
+            {/* Mobile Menu Button */}
+            <button
+              onClick={toggleMobileMenu}
+              className="lg:hidden p-2 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6 text-gray-700" />
+              ) : (
+                <Menu className="h-6 w-6 text-gray-700" />
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={closeMobileMenu}
+        ></div>
+      )}
+
+      {/* Mobile Sidebar */}
+      <div
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          {/* User Profile Section with Close Button (if logged in) */}
+          {user ? (
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+                <button
+                  onClick={closeMobileMenu}
+                  className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+                >
+                  <X className="h-6 w-6 text-gray-700" />
+                </button>
+              </div>
+              <div
+                onClick={() => handleNavigation("/profile")}
+                className="flex items-center space-x-3 cursor-pointer group"
+              >
+                <img
+                  src={user.avatar || user.photo}
+                  alt="Profile"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-[#2eb6f5]"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900 group-hover:text-[#2eb6f5] transition-colors">
+                    {user.username}
+                  </p>
+                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="text-xs text-[#2eb6f5] font-medium capitalize mt-1">
+                    {user.role}
+                  </p>
                 </div>
               </div>
             </div>
-
-            {!user && (
-              <Button
-                variant="outline"
-                size="sm"
-                asChild
-                className="transition-transform duration-300 hover:scale-105"
-              >
-                <a href="/Signup">Sign Up</a>
-              </Button>
-            )}
-
-            {user?.role !== "seller" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/purchased")}
-                className="transition-transform duration-300 hover:scale-105"
-              >
-                Purchased
-              </Button>
-            )}
-
-            {user?.role === "seller" && (
-              <Button
-                size="sm"
-                onClick={() => navigate("/Createlisting")}
-                className="transition-transform duration-300 hover:scale-105"
-              >
-                Create Listing
-              </Button>
-            )}
-          </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5 flex md:hidden" />
-            )}
-          </Button>
-
-          {user ? (
-            <Link to="/Profile">
-              <img
-                className="rounded-full h-10 w-10 object-cover border-2 border-blue-200 transition-transform duration-300 hover:scale-110"
-                src={user.avatar}
-                alt="Profile"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/src/assets/profile.png";
-                }}
-              />
-            </Link>
           ) : (
-            <Link
-              to="/signin"
-              className="text-slate-700 hover:underline transition-colors duration-300"
-            >
-              Sign in
-            </Link>
+            // Close button only for non-logged in users
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+              <button
+                onClick={closeMobileMenu}
+                className="p-2 rounded-xl hover:bg-gray-100 transition-colors"
+              >
+                <X className="h-6 w-6 text-gray-700" />
+              </button>
+            </div>
+          )}
+
+          {/* Navigation Links */}
+          <nav className="flex-1 overflow-y-auto py-6">
+            <div className="space-y-2 px-4">
+              <button
+                onClick={() => handleNavigation("/")}
+                className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+              >
+                <Home className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                  Home
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleNavigation("/buy")}
+                className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+              >
+                <ShoppingBag className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                  Buy
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleNavigation("/rent")}
+                className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+              >
+                <Home className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                  Rent
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleNavigation("/about")}
+                className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+              >
+                <Info className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                  About Us
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleNavigation("/contact")}
+                className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+              >
+                <Mail className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                  Contact Us
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleNavigation("/favorites")}
+                className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+              >
+                <Heart className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                  Favorites
+                </span>
+              </button>
+
+              {/* Purchased - Only for Buyers (Mobile) */}
+              {user && user.role === "buyer" && (
+                <button
+                  onClick={() => handleNavigation("/purchased")}
+                  className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+                >
+                  <CheckCircle className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                  <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                    Purchased
+                  </span>
+                </button>
+              )}
+
+              {/* Create Listing - Only for Sellers (Mobile) */}
+              {user && user.role === "seller" && (
+                <button
+                  onClick={() => handleNavigation("/createlisting")}
+                  className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-[#2eb6f5]/10 transition-all duration-300 group"
+                >
+                  <PlusCircle className="h-5 w-5 text-gray-600 group-hover:text-[#2eb6f5] transition-colors" />
+                  <span className="font-medium text-gray-700 group-hover:text-[#2eb6f5] transition-colors">
+                    Create Listing
+                  </span>
+                </button>
+              )}
+            </div>
+          </nav>
+
+          {/* Bottom Action Button */}
+          {!user && (
+            <div className="p-6 border-t border-gray-200">
+              <button
+                onClick={() => handleNavigation("/signin")}
+                className="w-full px-6 py-3 bg-gradient-to-r from-[#2eb6f5] to-[#1e90ff] text-white rounded-xl hover:shadow-lg transition-all duration-300 font-medium"
+              >
+                Sign In
+              </button>
+            </div>
           )}
         </div>
-        {/* ...existing code... */}
       </div>
-    </header>
-    // ...existing code...
+    </>
   );
-};
-
-export default Header;
+}

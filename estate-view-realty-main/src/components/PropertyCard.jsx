@@ -3,16 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Heart, MapPin, Bed, Bath, Square, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useDispatch, useSelector } from "react-redux";
-import { addToFavorites, removeFromFavorites } from "@/redux/favorite/favoriteSlice";
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const navigate = useNavigate();
-  // const [isFavorite, setIsFavorite] = useState(false);
-  const dispatch = useDispatch();
-const favorites = useSelector((state) => state.favorites.items);
-const isFavorite = favorites.some((fav) => fav._id === property._id);
-  
 
   const handleCardClick = () => {
     navigate(`/property/${property._id}`);
@@ -20,17 +13,13 @@ const isFavorite = favorites.some((fav) => fav._id === property._id);
 
   const handleViewDetails = (e) => {
     e.stopPropagation();
-    navigate(`/property/${property._id}`);
+    navigate(property._id);
   };
 
   const handleFavorite = (e) => {
-  e.stopPropagation();
-  if (isFavorite) {
-    dispatch(removeFromFavorites(property));
-  } else {
-    dispatch(addToFavorites(property));
-  }
-};
+    e.stopPropagation();
+    onToggleFavorite(property._id);
+  };
 
   // Helper to get the correct image src
   const getImageSrc = () => {
@@ -81,10 +70,8 @@ const isFavorite = favorites.some((fav) => fav._id === property._id);
           }}
           loading="lazy"
         />
-
         {/* Simplified Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-
         {/* Favorite Button - Optimized */}
         <button
           className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-md transition-transform duration-200 hover:scale-110 z-10 will-change-transform"
@@ -99,8 +86,7 @@ const isFavorite = favorites.some((fav) => fav._id === property._id);
             }`}
           />
         </button>
-
-        {/* Optimized Hover Overlay */}
+        {/* Optimized Hover Overlay
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
           <Button
             onClick={handleViewDetails}
@@ -110,9 +96,8 @@ const isFavorite = favorites.some((fav) => fav._id === property._id);
             <Eye className="w-4 h-4 mr-2" />
             View Details
           </Button>
-        </div>
-
-        {/* Status Badge */}
+        </div> */}
+        Status Badge
         {property.status && (
           <Badge
             className={`absolute top-4 left-4 ${
@@ -122,7 +107,6 @@ const isFavorite = favorites.some((fav) => fav._id === property._id);
             For {property.status === "sell" ? "Sale" : "Rent"}
           </Badge>
         )}
-
         {/* Price Badge */}
         <span className="absolute bottom-4 left-4 bg-[#2eb6f5] text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md backdrop-blur-sm">
           ₹{property.regularPrice?.toLocaleString()}
@@ -130,7 +114,6 @@ const isFavorite = favorites.some((fav) => fav._id === property._id);
             <span className="text-xs font-normal ml-1">/month</span>
           )}
         </span>
-
         {/* Offer Badge - Removed animate-pulse for performance */}
         {property.offer && discountAmount > 0 && (
           <Badge className="absolute top-14 left-4 bg-red-500 text-white font-bold shadow-md">

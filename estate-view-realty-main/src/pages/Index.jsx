@@ -8,14 +8,33 @@ import PropertyCard from "@/components/PropertyCard";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Index = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [properties, setProperties] = useState([]);
   const [filters, setFilters] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [favorites, setFavorites] = useState(() => {
+    const stored = localStorage.getItem("favorites");
+    return stored ? JSON.parse(stored) : [];
+  });
+
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/listing`)
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  const handleToggleFavorite = (listingId) => {
+    setFavorites((prev) =>
+      prev.includes(listingId)
+        ? prev.filter((id) => id !== listingId)
+        : [...prev, listingId]
+    );
+  };
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/listing`)
       .then((res) => res.json())
       .then((data) => {
         setProperties(data);
@@ -160,7 +179,11 @@ const Index = () => {
                             animationFillMode: "both",
                           }}
                         >
-                          <PropertyCard property={property} />
+                          <PropertyCard
+                            property={property}
+                            isFavorite={favorites.includes(property._id)}
+                            onToggleFavorite={handleToggleFavorite}
+                          />
                         </div>
                       ))
                     )}

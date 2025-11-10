@@ -40,3 +40,33 @@
 .read-the-docs {
   color: #888;
 }
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.animate-gradient {
+  background: linear-gradient(90deg, #3b82f6, #6366f1, #06b6d4);
+  background-size: 200% 200%;
+  /* -webkit-background-clip: text; */
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 2s linear infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}

@@ -24,6 +24,18 @@ const userSchema = new mongoose.Schema({
       enum: ["buyer", "seller"],
       required: true,
     },
+    phone: {
+      type: String,
+      default: "",
+    },
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
 },{timestamps: true});    
 
 const User = mongoose.model("User", userSchema); 

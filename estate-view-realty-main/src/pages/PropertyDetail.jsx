@@ -22,6 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -37,11 +39,7 @@ const PropertyDetail = () => {
         setLoading(true);
         setError(null);
 
-        console.log("Fetching property with ID:", id);
-
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/listing/${id}`
-        );
+        const response = await fetch(`${API_URL}/api/listing/${id}`);
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -214,12 +212,6 @@ const PropertyDetail = () => {
         <Header />
 
         <main className="container mx-auto px-4 py-8">
-          {/* Debug Info - Remove in production */}
-          <div className="mb-4 p-2 bg-yellow-100 rounded text-xs">
-            <strong>Debug:</strong> Property ID: {id} | Name: {property.name} |
-            Images: {property.imageUrls?.length || 0}
-          </div>
-
           {/* Back Button */}
           <Button
             onClick={() => navigate(-1)}
@@ -271,7 +263,7 @@ const PropertyDetail = () => {
 
                   {/* Property Badges */}
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    {property.status && (
+                    {/* {property.status && (
                       <Badge
                         className={`${
                           property.status === "sell"
@@ -281,7 +273,7 @@ const PropertyDetail = () => {
                       >
                         For {property.status === "sell" ? "Sale" : "Rent"}
                       </Badge>
-                    )}
+                    )} */}
 
                     {property.offer && discountAmount > 0 && (
                       <Badge className="bg-red-500 text-white font-bold animate-pulse">

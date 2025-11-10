@@ -17,7 +17,12 @@ const PORT = 3000;
 
 app.use(
   cors({
-    origin: process.env.VITE_FRONTEND_URL, // Use value from .env
+    origin: [
+      "https://real-estate-frontend-zeta-blond.vercel.app",
+      "https://real-estate-backend-alpha-seven.vercel.app",
+      "https://real-estate-backend-seven-gamma.vercel.app",
+      "https://real-estate-nine-ecru.vercel.app",
+    ],
     credentials: true,
   })
 );
