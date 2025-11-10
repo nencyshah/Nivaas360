@@ -10,6 +10,11 @@ export const VerifyToken = (req, res, next) => {
     const cookieToken = req.cookies?.access_token || null;
     const token = bearerToken || cookieToken;
 
+    console.log("VerifyToken authHeader:", authHeader);
+    console.log("VerifyToken bearerToken:", bearerToken);
+    console.log("VerifyToken cookieToken:", cookieToken);
+    console.log("VerifyToken token:", token);
+
     if (!token) {
       return res
         .status(401)
