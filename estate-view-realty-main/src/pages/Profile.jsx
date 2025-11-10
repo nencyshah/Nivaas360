@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import {
   deleteUserFailure,
   deleteUserStart,
@@ -19,7 +19,17 @@ export default function Profile() {
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // ⬇️ expects your JWT to be on user.token (adjust if different)
   const { user } = useSelector((state) => state.user);
+  const token = user?.token || null;
+
+  // Build auth headers only if token exists
+  const authHeaders = useMemo(
+    () => (token ? { Authorization: `Bearer ${token}` } : {}),
+    [token]
+  );
+
   const [file, setFile] = useState(undefined);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
@@ -32,7 +42,6 @@ export default function Profile() {
   const [updateError, setUpdateError] = useState(null);
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  // Keep form in sync if store user updates
   useEffect(() => {
     if (user) {
       setFormData({
@@ -43,22 +52,16 @@ export default function Profile() {
     }
   }, [user]);
 
-  // Safely get profile image
   const profileImg = user?.avatar || user?.photo || defaultProfileImg;
 
-  // Prevent rendering if user is null
   if (!user) {
     return (
       <>
         <Header />
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f0f9ff] via-white to-[#e0f2fe]">
           <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-lg flex flex-col items-center space-y-6">
-            <h1 className="text-4xl font-bold text-center mb-4 text-[#2eb6f5]">
-              Profile
-            </h1>
-            <p className="text-gray-500 text-center">
-              Please sign in to view your profile.
-            </p>
+            <h1 className="text-4xl font-bold text-center mb-4 text-[#2eb6f5]">Profile</h1>
+            <p className="text-gray-500 text-center">Please sign in to view your profile.</p>
             <button
               onClick={() => navigate("/signin")}
               className="px-6 py-3 bg-gradient-to-r from-[#2eb6f5] to-[#1e90ff] text-white rounded-xl hover:shadow-lg transition-all duration-300 font-medium"
@@ -73,13 +76,10 @@ export default function Profile() {
 
   const handleFileUpload = useCallback(
     async (file) => {
-      // Validate file type
       if (!file.type.startsWith("image/")) {
         setUploadError("Please upload an image file");
         return;
       }
-
-      // Validate file size (max 2MB for better compatibility)
       if (file.size > 2 * 1024 * 1024) {
         setUploadError("Image size should be less than 2MB");
         return;
@@ -102,8 +102,9 @@ export default function Profile() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              ...authHeaders, // ⬅️ send Bearer token if present
             },
-            credentials: "include",
+            credentials: "include", // also send cookie if you use cookie auth
             body: JSON.stringify({ avatar: base64Image }),
           });
 
@@ -117,26 +118,16 @@ export default function Profile() {
             return;
           }
 
-          // Check different response formats
           if (data.success && data.data) {
-            console.log("Upload successful, updating Redux store");
             dispatch(signInSuccess(data.data));
             setUploadError(null);
-            // Clear file state after successful upload
             setFile(undefined);
-            if (fileRef.current) {
-              fileRef.current.value = "";
-            }
+            if (fileRef.current) fileRef.current.value = "";
           } else if (data.avatar) {
-            // Alternative response format
-            console.log("Upload successful (alt format), updating Redux store");
             dispatch(signInSuccess({ ...user, avatar: data.avatar }));
             setUploadError(null);
-            // Clear file state after successful upload
             setFile(undefined);
-            if (fileRef.current) {
-              fileRef.current.value = "";
-            }
+            if (fileRef.current) fileRef.current.value = "";
           } else {
             console.error("Unexpected response format:", data);
             setUploadError("Failed to update profile picture");
@@ -145,7 +136,6 @@ export default function Profile() {
           console.error("Error uploading image:", err);
           setUploadError(`Network error: ${err.message}`);
         } finally {
-          // Always clear uploading state
           setUploading(false);
         }
       };
@@ -156,13 +146,11 @@ export default function Profile() {
         setUploading(false);
       };
     },
-    [user, dispatch]
+    [user, dispatch, authHeaders]
   );
 
   useEffect(() => {
-    if (file) {
-      handleFileUpload(file);
-    }
+    if (file) handleFileUpload(file);
   }, [file, handleFileUpload]);
 
   const handleChange = (e) => {
@@ -172,13 +160,10 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form data
     if (!formData.username || !formData.email) {
       setUpdateError("Username and email are required");
       return;
     }
-
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setUpdateError("Please enter a valid email address");
@@ -192,7 +177,10 @@ export default function Profile() {
     try {
       const res = await fetch(`${API_URL}/api/user/update/${user._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders, // ⬅️ Bearer token
+        },
         credentials: "include",
         body: JSON.stringify(formData),
       });
@@ -203,20 +191,14 @@ export default function Profile() {
       if (!res.ok) {
         setUpdateError(data.message || "Update failed");
       } else {
-        // API returns { success, data: updatedUser }
         if (data.success && data.data) {
           dispatch(signInSuccess(data.data));
           setUpdateSuccess(true);
-          setTimeout(() => {
-            setUpdateSuccess(false);
-          }, 3000);
+          setTimeout(() => setUpdateSuccess(false), 3000);
         } else if (data._id) {
-          // Alternative format: backend returns user directly
           dispatch(signInSuccess(data));
           setUpdateSuccess(true);
-          setTimeout(() => {
-            setUpdateSuccess(false);
-          }, 3000);
+          setTimeout(() => setUpdateSuccess(false), 3000);
         } else {
           setUpdateError("Update failed. Please try again.");
         }
@@ -238,9 +220,11 @@ export default function Profile() {
     try {
       dispatch(deleteUserStart());
 
-      // No headers/body to avoid preflight; credentials to send cookie
       const res = await fetch(`${API_URL}/api/user/delete/${user._id}`, {
         method: "DELETE",
+        headers: {
+          ...authHeaders, // ⬅️ Bearer token
+        },
         credentials: "include",
       });
 
@@ -248,8 +232,7 @@ export default function Profile() {
 
       if (res.ok) {
         dispatch(deleteUserSuccess());
-        document.cookie =
-          "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         navigate("/signup");
         alert("Account deleted successfully!");
       } else {
@@ -268,6 +251,9 @@ export default function Profile() {
       const res = await fetch(`${API_URL}/api/auth/signout`, {
         method: "POST",
         credentials: "include",
+        headers: {
+          ...authHeaders, // optional, but harmless
+        },
       });
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -275,8 +261,7 @@ export default function Profile() {
         return;
       }
       await res.json().catch(() => ({}));
-      document.cookie =
-        "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       dispatch(signOutUserSuccess());
       navigate("/signin");
     } catch (error) {
@@ -292,10 +277,7 @@ export default function Profile() {
           <h1 className="text-4xl font-extrabold text-[#2eb6f5] text-center mb-2 tracking-tight">
             Profile
           </h1>
-          <form
-            className="w-full flex flex-col items-center space-y-6"
-            onSubmit={handleSubmit}
-          >
+          <form className="w-full flex flex-col items-center space-y-6" onSubmit={handleSubmit}>
             <input
               onChange={(e) => setFile(e.target.files[0])}
               type="file"
@@ -318,30 +300,20 @@ export default function Profile() {
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full">
                   <div className="flex flex-col items-center">
                     <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin mb-2"></div>
-                    <p className="text-white font-medium text-sm">
-                      Uploading...
-                    </p>
+                    <p className="text-white font-medium text-sm">Uploading...</p>
                   </div>
                 </div>
               )}
               <div className="absolute bottom-0 right-0 bg-[#2eb6f5] text-white p-2 rounded-full cursor-pointer hover:bg-[#1e90ff] transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
               </div>
             </div>
 
-            {/* Upload Error */}
             {uploadError && (
               <div className="w-full p-3 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-600 text-sm text-center">
-                  {uploadError}
-                </p>
+                <p className="text-red-600 text-sm text-center">{uploadError}</p>
               </div>
             )}
 
@@ -376,20 +348,18 @@ export default function Profile() {
                 className="border-2 border-[#2eb6f5]/30 focus:border-[#2eb6f5] p-3 rounded-xl transition-colors duration-200 shadow-sm w-full bg-[#F7FBFF] font-medium focus:outline-none"
               />
             </div>
+
             {updateError && (
               <div className="w-full p-3 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-600 text-sm text-center">
-                  {updateError}
-                </p>
+                <p className="text-red-600 text-sm text-center">{updateError}</p>
               </div>
             )}
             {updateSuccess && (
               <div className="w-full p-3 bg-green-50 border border-green-200 rounded-xl">
-                <p className="text-green-600 text-sm text-center font-medium">
-                  Profile updated successfully!
-                </p>
+                <p className="text-green-600 text-sm text-center font-medium">Profile updated successfully!</p>
               </div>
             )}
+
             <button
               type="submit"
               disabled={updateLoading || uploading}
@@ -398,6 +368,7 @@ export default function Profile() {
               {updateLoading ? "Updating..." : "UPDATE"}
             </button>
           </form>
+
           <div className="flex justify-between w-full pt-2">
             <span
               onClick={handleDeleteUser}
