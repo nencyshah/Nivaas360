@@ -8,7 +8,7 @@ import PropertyCard from "@/components/PropertyCard";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Index = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
