@@ -20,15 +20,8 @@ export default function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ⬇️ expects your JWT to be on user.token (adjust if different)
+  // Using cookie-based auth, no need for Bearer token
   const { user } = useSelector((state) => state.user);
-  const token = user?.token || null;
-
-  // Build auth headers only if token exists
-  const authHeaders = useMemo(
-    () => (token ? { Authorization: `Bearer ${token}` } : {}),
-    [token]
-  );
 
   const [file, setFile] = useState(undefined);
   const [uploading, setUploading] = useState(false);
@@ -102,9 +95,8 @@ export default function Profile() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              ...authHeaders, // ⬅️ send Bearer token if present
             },
-            credentials: "include", // also send cookie if you use cookie auth
+            credentials: "include", // send cookie for auth
             body: JSON.stringify({ avatar: base64Image }),
           });
 
@@ -146,7 +138,7 @@ export default function Profile() {
         setUploading(false);
       };
     },
-    [user, dispatch, authHeaders]
+    [user, dispatch]
   );
 
   useEffect(() => {
@@ -179,7 +171,6 @@ export default function Profile() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          ...authHeaders, // ⬅️ Bearer token
         },
         credentials: "include",
         body: JSON.stringify(formData),
@@ -222,9 +213,6 @@ export default function Profile() {
 
       const res = await fetch(`${API_URL}/api/user/delete/${user._id}`, {
         method: "DELETE",
-        headers: {
-          ...authHeaders, // ⬅️ Bearer token
-        },
         credentials: "include",
       });
 
@@ -251,9 +239,6 @@ export default function Profile() {
       const res = await fetch(`${API_URL}/api/auth/signout`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          ...authHeaders, // optional, but harmless
-        },
       });
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
