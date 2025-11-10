@@ -22,6 +22,8 @@ app.use(
       "https://real-estate-backend-alpha-seven.vercel.app",
       "https://real-estate-backend-seven-gamma.vercel.app",
       "https://real-estate-nine-ecru.vercel.app",
+      "https://nivaas360-frontend.vercel.app",
+      "https://nivaas360.onrender.com",
     ],
     credentials: true,
   })
