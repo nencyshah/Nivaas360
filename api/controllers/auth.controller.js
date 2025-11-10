@@ -32,7 +32,7 @@ export const signup = async (req, res, next, role) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .status(201)
-      .json(rest);
+      .json({ ...rest, token });
   } catch (error) {
     if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
       return res.status(400).json({
@@ -71,7 +71,7 @@ export const signin = async (req, res, next) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .status(200)
-      .json(rest);
+      .json({ ...rest, token });
   } catch (error) {
     next(error);
   }
@@ -91,7 +91,7 @@ export const google = async (req, res, next) => {
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .status(200)
-        .json(rest);
+        .json({ ...rest, token });
     } else {
       const generatedPassword =
         Math.random().toString(36).slice(-8) +
@@ -126,7 +126,7 @@ export const google = async (req, res, next) => {
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         .status(200)
-        .json(rest);
+        .json({ ...rest, token });
     }
   } catch (error) {
     next(error);

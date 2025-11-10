@@ -10,10 +10,16 @@ export const VerifyToken = (req, res, next) => {
     const cookieToken = req.cookies?.access_token || null;
     const token = bearerToken || cookieToken;
 
-    console.log("VerifyToken authHeader:", authHeader);
-    console.log("VerifyToken bearerToken:", bearerToken);
-    console.log("VerifyToken cookieToken:", cookieToken);
-    console.log("VerifyToken token:", token);
+    console.log("=== VerifyToken Debug ===");
+    console.log("Origin:", req.headers.origin);
+    console.log("Method:", req.method);
+    console.log("Path:", req.path);
+    console.log("All Cookies:", req.cookies);
+    console.log("authHeader:", authHeader);
+    console.log("bearerToken:", bearerToken);
+    console.log("cookieToken:", cookieToken);
+    console.log("Final token:", token ? "EXISTS" : "MISSING");
+    console.log("========================");
 
     if (!token) {
       return res
@@ -24,9 +30,11 @@ export const VerifyToken = (req, res, next) => {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     // attach user info for downstream checks
     req.user = { id: payload.id || payload._id, role: payload.role };
-
+    
+    console.log("Token verified for user:", req.user.id);
     return next();
   } catch (err) {
+    console.log("Token verification error:", err.message);
     return res
       .status(401)
       .json({

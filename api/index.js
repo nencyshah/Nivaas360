@@ -31,15 +31,17 @@ app.use(
     origin: (origin, cb) => {
       if (!origin) return cb(null, true); // allow curl/Postman/no-Origin
       if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+      console.log("CORS blocked for origin:", origin);
       return cb(new Error(`CORS blocked for origin: ${origin}`), false);
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],   // <-- allow PUT/DELETE
-    allowedHeaders: ["Content-Type", "Authorization"],       // <-- allow token header
-    credentials: true,                                       // only matters for cookies
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    exposedHeaders: ["Set-Cookie"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 );
-// Some hosts need explicit OPTIONS handler for preflight
-app.options("*", cors());
 
 /* ✅ Body & cookies */
 app.use(express.json({ limit: "10mb" }));

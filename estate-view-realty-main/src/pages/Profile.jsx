@@ -20,8 +20,11 @@ export default function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Using cookie-based auth, no need for Bearer token
   const { user } = useSelector((state) => state.user);
+  const token = user?.token;
+
+  // Build auth headers
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const [file, setFile] = useState(undefined);
   const [uploading, setUploading] = useState(false);
@@ -95,8 +98,9 @@ export default function Profile() {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              ...authHeaders,
             },
-            credentials: "include", // send cookie for auth
+            credentials: "include",
             body: JSON.stringify({ avatar: base64Image }),
           });
 
@@ -138,7 +142,7 @@ export default function Profile() {
         setUploading(false);
       };
     },
-    [user, dispatch]
+    [user, dispatch, authHeaders]
   );
 
   useEffect(() => {
@@ -171,6 +175,7 @@ export default function Profile() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          ...authHeaders,
         },
         credentials: "include",
         body: JSON.stringify(formData),
@@ -213,6 +218,7 @@ export default function Profile() {
 
       const res = await fetch(`${API_URL}/api/user/delete/${user._id}`, {
         method: "DELETE",
+        headers: authHeaders,
         credentials: "include",
       });
 
