@@ -10,9 +10,6 @@ import {
   Shield,
 } from "lucide-react";
 import OAuth from "../components/OAuth";
-import OAuthSignUp from "../components/OAuthSignUp";
-
-const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 export default function Signup() {
   const [formData, setFormData] = useState({ role: "buyer" });
@@ -46,11 +43,11 @@ export default function Signup() {
 
     const endpoint =
       formData.role === "seller"
-        ? `${API_URL}/api/auth/signup/seller`
-        : `${API_URL}/api/auth/signup/buyer`;
+        ? "/api/auth/signup/seller"
+        : "/api/auth/signup/buyer";
 
     try {
-      const res = await fetch(endpoint, {
+     const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +62,7 @@ export default function Signup() {
         data = JSON.parse(text);
       }
 
-      if (data.success === false) {
+      if (!res.ok) {
         setLoading(false);
         if (
           data.message &&
@@ -80,13 +77,8 @@ export default function Signup() {
       }
 
       setLoading(false);
-      if (res.ok) {
-        showNotification("Signup successful!", "success");
-        setTimeout(() => navigate("/signin"), 1500);
-      } else {
-        showNotification(data.message || "Signup failed!", "error");
-        setLoading(false);
-      }
+      showNotification("Signup successful!", "success");
+      setTimeout(() => navigate("/signin"), 1500);
     } catch (error) {
       showNotification("An error occurred. Please try again.", "error");
       setLoading(false);
@@ -324,7 +316,7 @@ export default function Signup() {
                 </div>
               </div>
 
-              <OAuthSignUp />
+              <OAuth />
             </form>
 
             {/* Sign In Link */}

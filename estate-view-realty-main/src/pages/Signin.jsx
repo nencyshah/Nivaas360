@@ -7,9 +7,10 @@ import {
   signInFailure,
 } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
+import CorsTest from "../components/CorsTest";
 import { Eye, EyeOff, Mail, Lock, Home, ArrowRight } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Signin() {
   const [formData, setFormData] = useState({});
@@ -53,8 +54,8 @@ export default function Signin() {
       });
 
       const data = await res.json();
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
+      if (!res.ok) {
+        dispatch(signInFailure(data.message || "Sign in failed!"));
         showNotification(data.message || "Sign in failed!", "error");
         return;
       }
@@ -256,7 +257,12 @@ export default function Signin() {
               Secure login with end-to-end encryption
             </p>
           </div>
+                    {/* CORS Test Component */}
+          <div className="mt-4">
+            <CorsTest />
+          </div>
         </div>
+
       </div>
 
       {/* CSS Animations */}

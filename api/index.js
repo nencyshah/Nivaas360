@@ -17,7 +17,9 @@ const PORT = 3000;
 
 app.use(
   cors({
-    origin: process.env.VITE_FRONTEND_URL, // Use value from .env
+    origin: [
+"https://nivaas360-frontend.vercel.app",
+"https://nivaas360.onrender.com"    ],
     credentials: true,
   })
 );
